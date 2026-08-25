@@ -2,236 +2,496 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paciência Verbal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Paciência Verbal — aprenda conjugação verbal jogando</title>
+<meta name="description" content="Monte verbos combinando radical e desinência. Um jogo para aprender conjugação verbal de forma visual e divertida.">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --ind:#22c55e; --sub:#eab308; --imp:#ef4444; --nom:#3b82f6;
-    --bg:#f1f5f9; --card:#ffffff; --ink:#1e293b; --muted:#64748b;
-    --mesa:#e7efe7;
-  }
-  *{box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI',system-ui,Arial,sans-serif;}
-  body{background:var(--bg); color:var(--ink); min-height:100vh;}
-  .screen{display:none; max-width:960px; margin:0 auto; padding:20px;}
-  .screen.active{display:block;}
+/* =========================================================
+   TOKENS — Tech Educativo (Azul Royal · Coral Energético · Areia)
+   ========================================================= */
+:root{
+  --royal:#2A4FD9;
+  --royal-600:#1E3CB0;
+  --royal-100:#E7ECFC;
+  --coral:#FF6A4D;
+  --coral-600:#E85535;
+  --coral-100:#FFE7E0;
+  --sand:#F4EEE2;
+  --sand-deep:#E9E0CD;
 
-  /* ---------- Tela inicial ---------- */
-  #start{text-align:center; padding-top:8vh;}
-  .logo{font-size:2.6rem; font-weight:800; letter-spacing:2px;}
-  .logo span{color:var(--ind);}
-  .tagline{color:var(--muted); margin:10px 0 6px; font-size:1.1rem;}
-  .weather{display:inline-block; background:#fff; border-radius:99px; padding:8px 18px;
-    margin:14px 0 30px; box-shadow:0 2px 8px rgba(0,0,0,.08); font-size:.95rem; color:var(--muted);}
-  .menu{display:flex; flex-direction:column; gap:12px; max-width:320px; margin:0 auto;}
-  .btn{border:none; border-radius:12px; padding:14px 22px; font-size:1.05rem; font-weight:700;
-    cursor:pointer; transition:transform .15s, box-shadow .15s; background:#fff; color:var(--ink);
-    box-shadow:0 3px 10px rgba(0,0,0,.10);}
-  .btn:hover{transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,.15);}
-  .btn.primary{background:var(--ind); color:#fff;}
-  .btn.small{padding:8px 14px; font-size:.85rem; border-radius:9px;}
-  .back{margin-bottom:16px; background:#e2e8f0;}
+  --bg:var(--sand);
+  --bg-2:var(--sand-deep);
+  --surface:#FFFFFF;
+  --surface-2:#FBF8F1;
+  --ink:#1B2333;
+  --ink-soft:#4A5468;
+  --muted:#7A8296;
+  --line:rgba(27,35,51,.10);
+  --shadow-sm:0 2px 8px rgba(27,35,51,.06);
+  --shadow-md:0 10px 28px rgba(27,35,51,.10);
+  --shadow-lg:0 22px 50px rgba(27,35,51,.16);
+  --focus:0 0 0 3px rgba(42,79,217,.35);
 
-  /* ---------- Cartas ---------- */
-  .cardv{display:inline-flex; flex-direction:column; align-items:center; justify-content:center;
-    background:var(--card); border-radius:12px; border:2px solid #cbd5e1;
-    box-shadow:0 3px 6px rgba(0,0,0,.10); user-select:none; touch-action:none;}
-  .radical-card{width:120px; height:150px; border-bottom:6px solid var(--ind); cursor:pointer;
-    transition:transform .15s, box-shadow .15s;}
-  .radical-card .rad{font-size:1.8rem; font-weight:800;}
-  .radical-card .inf{font-size:.8rem; color:var(--muted); margin-top:6px;}
-  .radical-card .tag{font-size:.62rem; letter-spacing:1px; color:#94a3b8; margin-top:10px;}
-  .radical-card.target{outline:3px solid var(--ind); outline-offset:3px;}
-  .radical-card.over{transform:scale(1.06); box-shadow:0 8px 18px rgba(34,197,94,.35);}
-  .ending-card{width:86px; height:110px; font-size:1.35rem; font-weight:800; cursor:grab;
-    transition:transform .12s;}
-  .ending-card:hover{transform:translateY(-6px);}
-  .ending-card.selected{outline:3px solid var(--nom); outline-offset:2px; transform:translateY(-6px);}
-  .ghost{position:fixed; pointer-events:none; z-index:99; opacity:.9; transform:rotate(-4deg) scale(1.05);}
+  --ind:var(--royal); --sub:#B8860A; --imp:var(--coral); --nom:#3B7F72;
 
-  /* ---------- Mesa ---------- */
-  #game h2{font-size:1.3rem; letter-spacing:1px; text-align:center; margin-bottom:6px;}
-  .chips{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:10px 0 4px;}
-  .chip{padding:6px 14px; border-radius:99px; font-size:.85rem; font-weight:700; color:#fff;}
-  .chip.info{background:#475569;}
-  .section{background:var(--mesa); border-radius:16px; padding:14px; margin:14px 0;}
-  .section h3{font-size:.75rem; letter-spacing:2px; color:var(--muted); margin-bottom:10px; text-align:center;}
-  .row{display:flex; gap:14px; justify-content:center; flex-wrap:wrap;}
-  .assembly{display:flex; align-items:center; justify-content:center; gap:10px; min-height:70px;
-    font-size:1.5rem; font-weight:800; flex-wrap:wrap;}
-  .slot{min-width:70px; padding:10px 14px; border:2px dashed #94a3b8; border-radius:10px;
-    color:#94a3b8; font-size:1.2rem; text-align:center;}
-  .slot.filled{border-style:solid; color:var(--ink); background:#fff;}
-  .result-word{color:var(--ind); animation:pop .4s;}
-  @keyframes pop{0%{transform:scale(.4);}70%{transform:scale(1.2);}100%{transform:scale(1);}}
-  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}
-  .shake{animation:shake .35s;}
+  --radius-sm:10px; --radius-md:16px; --radius-lg:24px;
+  --font-display:'Space Grotesk', 'Inter', sans-serif;
+  --font-body:'Inter', sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+html[data-theme="dark"]{
+  --bg:#0E1220;
+  --bg-2:#151A2C;
+  --surface:#161C30;
+  --surface-2:#1D2438;
+  --ink:#EEF1FA;
+  --ink-soft:#B7BFD6;
+  --muted:#8991AC;
+  --line:rgba(238,241,250,.10);
+  --shadow-sm:0 2px 10px rgba(0,0,0,.30);
+  --shadow-md:0 14px 32px rgba(0,0,0,.42);
+  --shadow-lg:0 24px 60px rgba(0,0,0,.55);
+  --royal:#6E8CFF; --royal-600:#5674EF; --royal-100:#212B4D;
+  --coral:#FF8567; --coral-600:#FF6A4D; --coral-100:#3A2436;
+  --sub:#E7C466; --nom:#69B9A8;
+}
 
-  /* ---------- Feedback ---------- */
-  #feedback{border-radius:14px; padding:14px 18px; margin:14px 0; display:none; animation:pop .3s;}
-  #feedback.ok{display:block; background:#dcfce7; border:2px solid var(--ind);}
-  #feedback.bad{display:block; background:#fee2e2; border:2px solid var(--imp);}
-  #feedback .big{font-size:1.15rem; font-weight:800; margin-bottom:6px;}
-  #feedback .detail{font-size:.9rem; color:#334155; line-height:1.5;}
-  #hintBox{display:none; background:#fef9c3; border:2px solid var(--sub); border-radius:12px;
-    padding:10px 16px; margin:10px 0; font-size:.92rem;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--font-body); -webkit-font-smoothing:antialiased;
+  transition:background .35s var(--ease), color .35s var(--ease);
+  overflow-x:hidden;
+}
+h1,h2,h3{font-family:var(--font-display); margin:0; letter-spacing:-.01em;}
+p{margin:0;}
+button{font-family:var(--font-body); cursor:pointer; border:none; background:none; color:inherit;}
+button:focus-visible, .chip:focus-visible, a:focus-visible{outline:none; box-shadow:var(--focus); border-radius:8px;}
+::selection{background:var(--coral-100); color:var(--coral-600);}
 
-  /* ---------- Placar ---------- */
-  .stats{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:14px 0;}
-  .stat{background:#fff; border-radius:12px; padding:8px 16px; text-align:center;
-    box-shadow:0 2px 6px rgba(0,0,0,.08); min-width:86px;}
-  .stat b{display:block; font-size:1.25rem;}
-  .stat span{font-size:.7rem; color:var(--muted); letter-spacing:1px;}
-  .progressbar{height:10px; background:#e2e8f0; border-radius:99px; overflow:hidden; margin:6px 0 2px;}
-  .progressbar div{height:100%; background:var(--ind); width:0%; transition:width .4s;}
-  .actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:10px;}
-  .btn.hint{background:var(--sub); color:#fff;}
-  .btn.warn{background:#f97316; color:#fff;}
-  .toast{position:fixed; top:18px; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff;
-    padding:10px 22px; border-radius:99px; font-weight:700; z-index:200; animation:pop .3s;}
+/* ---------- fundo decorativo (assinatura visual) ---------- */
+.bg-deco{position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none;}
+.blob{position:absolute; filter:blur(60px); opacity:.55; border-radius:50%; animation:float 16s ease-in-out infinite;}
+.blob.b1{width:360px; height:360px; background:var(--royal); top:-120px; left:-100px; opacity:.18; animation-duration:20s;}
+.blob.b2{width:300px; height:300px; background:var(--coral); bottom:-100px; right:-80px; opacity:.16; animation-duration:24s; animation-delay:-6s;}
+.blob.b3{width:220px; height:220px; background:var(--sand-deep); top:40%; right:10%; opacity:.5; animation-duration:18s; animation-delay:-3s;}
+html[data-theme="dark"] .blob.b3{opacity:.12; background:var(--royal);}
+.dotgrid{position:absolute; inset:0; background-image:radial-gradient(var(--line) 1px, transparent 1px); background-size:26px 26px; opacity:.5;}
+@keyframes float{
+  0%,100%{ transform:translate(0,0) scale(1); }
+  50%{ transform:translate(24px,-28px) scale(1.06); }
+}
+@media (prefers-reduced-motion: reduce){
+  .blob{animation:none !important;}
+}
 
-  /* ---------- Aprender / Como jogar / Níveis ---------- */
-  .panel{background:#fff; border-radius:16px; padding:20px; margin-bottom:14px; box-shadow:0 2px 8px rgba(0,0,0,.07);}
-  .panel h3{margin-bottom:8px;}
-  .panel p{line-height:1.6; color:#334155; margin-bottom:8px;}
-  .demo{display:flex; gap:8px; align-items:center; justify-content:center; font-weight:800;
-    font-size:1.2rem; margin:10px 0; flex-wrap:wrap;}
-  .demo .mini{background:var(--mesa); border:2px solid #cbd5e1; border-radius:8px; padding:6px 12px;}
-  .legend{display:flex; gap:10px; flex-wrap:wrap;}
-  .overlay{position:fixed; inset:0; background:rgba(15,23,42,.65); display:none;
-    align-items:center; justify-content:center; z-index:150;}
-  .overlay.active{display:flex;}
-  .overlay .box{background:#fff; border-radius:18px; padding:30px; text-align:center; max-width:340px;}
-  .overlay .box h2{margin-bottom:10px;}
-  @media(max-width:520px){
-    .radical-card{width:96px; height:126px;}
-    .ending-card{width:70px; height:92px; font-size:1.1rem;}
-    .logo{font-size:2rem;}
-  }
+/* ---------- shell ---------- */
+.shell{position:relative; z-index:1; max-width:760px; margin:0 auto; padding:18px 18px 64px;}
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:6px 2px 10px;}
+.brand{display:flex; align-items:center; gap:9px; font-family:var(--font-display); font-weight:700; font-size:1.05rem; letter-spacing:-.02em;}
+.brand .dot{width:9px; height:9px; border-radius:50%; background:var(--coral); box-shadow:0 0 0 4px var(--coral-100);}
+
+.theme-toggle{
+  position:relative; width:52px; height:30px; border-radius:99px; background:var(--surface-2);
+  border:1px solid var(--line); box-shadow:var(--shadow-sm); transition:background .3s var(--ease);
+}
+.theme-toggle .knob{
+  position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%;
+  background:linear-gradient(135deg, var(--royal), var(--coral)); transition:transform .3s var(--ease);
+  display:flex; align-items:center; justify-content:center; font-size:11px;
+}
+html[data-theme="dark"] .theme-toggle .knob{transform:translateX(22px);}
+
+/* ---------- screens ---------- */
+.screen{display:none; animation:enter .45s var(--ease);}
+.screen.active{display:block;}
+@keyframes enter{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+
+/* ---------- botões ---------- */
+.btn{
+  border-radius:var(--radius-md); padding:14px 20px; font-weight:700; font-size:1rem;
+  background:var(--surface); color:var(--ink); box-shadow:var(--shadow-sm); border:1px solid var(--line);
+  transition:transform .18s var(--ease), box-shadow .18s var(--ease), background .18s var(--ease);
+  display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%;
+}
+.btn:hover{transform:translateY(-2px); box-shadow:var(--shadow-md);}
+.btn:active{transform:translateY(0); box-shadow:var(--shadow-sm);}
+.btn.primary{background:linear-gradient(135deg, var(--royal), var(--royal-600)); color:#fff; border:none;}
+.btn.coral{background:linear-gradient(135deg, var(--coral), var(--coral-600)); color:#fff; border:none;}
+.btn.ghost{background:transparent; box-shadow:none; border:1px solid var(--line); color:var(--ink-soft);}
+.btn.small{width:auto; padding:9px 15px; font-size:.85rem; border-radius:12px;}
+.btn[disabled]{opacity:.4; cursor:not-allowed; transform:none; box-shadow:none;}
+.back-fab{
+  position:fixed; top:14px; left:14px; z-index:80;
+  width:44px; height:44px; border-radius:50%;
+  display:none; align-items:center; justify-content:center;
+  background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow-md);
+  font-size:1.2rem; color:var(--ink); transition:transform .18s var(--ease), box-shadow .18s var(--ease);
+}
+.back-fab.show{display:flex;}
+.back-fab:hover{transform:translateY(-2px) scale(1.04); box-shadow:var(--shadow-lg);}
+.back-fab:active{transform:translateY(0) scale(.97);}
+body.has-back-fab .brand{opacity:0; pointer-events:none;}
+@media(max-width:520px){
+  .back-fab{width:40px; height:40px; top:10px; left:10px; font-size:1.05rem;}
+}
+
+/* ---------- hero (início) ---------- */
+#start{padding-top:6vh;}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:7px; font-size:.72rem; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--royal); background:var(--royal-100); padding:6px 12px; border-radius:99px;
+}
+.hero-title{font-size:2.5rem; line-height:1.05; margin:16px 0 8px; font-weight:700;}
+.hero-title em{font-style:normal; color:var(--coral);}
+.hero-tag{color:var(--ink-soft); font-size:1.02rem; line-height:1.5; max-width:46ch; margin-bottom:22px;}
+
+.equation{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:6px 0 26px;
+  font-family:var(--font-display); font-weight:700; font-size:1.15rem;
+}
+.equation .piece{
+  background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:9px 14px;
+  box-shadow:var(--shadow-sm); animation:pulse 3.2s var(--ease) infinite;
+}
+.equation .piece:nth-child(1){animation-delay:0s; color:var(--royal);}
+.equation .piece:nth-child(3){animation-delay:.5s; color:var(--coral);}
+.equation .piece.result{background:linear-gradient(135deg, var(--royal-100), var(--coral-100)); color:var(--ink); animation-delay:1s;}
+.equation .op{color:var(--muted); font-weight:400;}
+@keyframes pulse{0%,80%,100%{transform:translateY(0);} 40%{transform:translateY(-4px);}}
+
+.menu{display:flex; flex-direction:column; gap:12px;}
+.menu .btn{text-align:left; justify-content:flex-start; padding:16px 18px;}
+.menu .btn .lead{font-size:1.35rem;}
+.menu .btn small{display:block; font-weight:400; color:var(--ink-soft); font-size:.8rem; margin-top:2px;}
+
+@media (min-width:600px){
+  .hero-title{font-size:3.1rem;}
+  .menu{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .menu .btn.primary{grid-column:1 / -1;}
+}
+
+/* ---------- painéis (aprender / como jogar) ---------- */
+.panel{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg);
+  padding:22px; margin-bottom:14px; box-shadow:var(--shadow-sm);
+}
+.panel h3{font-size:1.15rem; margin-bottom:8px;}
+.panel p{line-height:1.65; color:var(--ink-soft); margin-bottom:8px; font-size:.96rem;}
+.panel p:last-child{margin-bottom:0;}
+.demo{display:flex; gap:8px; align-items:center; justify-content:center; font-weight:700; font-size:1.15rem; margin:14px 0; flex-wrap:wrap; font-family:var(--font-display);}
+.demo .mini{background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:7px 13px;}
+.legend{display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;}
+
+/* ---------- chips ---------- */
+.chips{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:10px 0 4px;}
+.chip{padding:7px 15px; border-radius:99px; font-size:.82rem; font-weight:700; color:#fff; letter-spacing:.01em;}
+.chip.info{background:var(--ink-soft);}
+.chip.selectable{
+  background:var(--surface); color:var(--ink-soft); border:1.5px solid var(--line);
+  transition:all .18s var(--ease);
+}
+.chip.selectable:hover:not([disabled]){border-color:var(--royal); color:var(--royal); transform:translateY(-1px);}
+.chip.selectable.ativo{background:var(--royal); color:#fff; border-color:var(--royal); box-shadow:var(--shadow-sm);}
+.chip[disabled]{opacity:.5; cursor:not-allowed;}
+
+/* ---------- seções de jogo ---------- */
+#game h2{font-size:1.3rem; text-align:center; margin-bottom:4px;}
+#game .sub{text-align:center; color:var(--muted); font-size:.8rem; margin-bottom:14px;}
+.section{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); padding:16px; margin:14px 0; box-shadow:var(--shadow-sm);}
+.section h4{font-size:.7rem; letter-spacing:.16em; color:var(--muted); margin-bottom:12px; text-align:center; text-transform:uppercase; font-weight:700; font-family:var(--font-body);}
+.row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+
+/* ---------- cartas ---------- */
+.cardv{
+  display:inline-flex; flex-direction:column; align-items:center; justify-content:center;
+  background:var(--surface); border-radius:var(--radius-md); border:1.5px solid var(--line);
+  box-shadow:var(--shadow-sm); user-select:none; touch-action:none; transition:box-shadow .18s var(--ease);
+}
+.radical-card{width:118px; height:148px; border-bottom:5px solid var(--royal); cursor:pointer; transition:transform .16s var(--ease), box-shadow .16s var(--ease);}
+.radical-card .rad{font-size:1.7rem; font-weight:700; font-family:var(--font-display);}
+.radical-card .inf{font-size:.76rem; color:var(--muted); margin-top:5px;}
+.radical-card .tag{font-size:.6rem; letter-spacing:.12em; color:var(--muted); margin-top:8px; text-transform:uppercase;}
+.radical-card.target{outline:2.5px solid var(--royal); outline-offset:3px;}
+.radical-card.over{transform:scale(1.05); box-shadow:0 10px 26px rgba(42,79,217,.28);}
+.radical-card:hover{transform:translateY(-2px);}
+.badges{display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin-top:8px; min-height:16px;}
+.badge{background:var(--royal-100); color:var(--royal); font-size:.6rem; font-weight:700; border-radius:6px; padding:2px 6px;}
+
+.ending-card{width:84px; height:108px; font-size:1.3rem; font-weight:700; cursor:grab; font-family:var(--font-display); transition:transform .14s var(--ease);}
+.ending-card:hover{transform:translateY(-6px);}
+.ending-card.selected{outline:2.5px solid var(--coral); outline-offset:2px; transform:translateY(-6px);}
+.ghost{position:fixed; pointer-events:none; z-index:99; opacity:.92; transform:rotate(-4deg) scale(1.05);}
+
+.assembly{display:flex; align-items:center; justify-content:center; gap:10px; min-height:66px; font-size:1.4rem; font-weight:700; flex-wrap:wrap; font-family:var(--font-display);}
+.slot{min-width:66px; padding:10px 14px; border:2px dashed var(--line); border-radius:12px; color:var(--muted); font-size:1.1rem; text-align:center;}
+.slot.filled{border-style:solid; border-color:var(--line); color:var(--ink); background:var(--surface-2);}
+.result-word{color:var(--royal); animation:pop .4s var(--ease);}
+@keyframes pop{0%{transform:scale(.4);}70%{transform:scale(1.15);}100%{transform:scale(1);}}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-7px);}75%{transform:translateX(7px);}}
+.shake{animation:shake .35s var(--ease);}
+
+/* ---------- feedback (nuvem) ---------- */
+#feedback, #cegoFeedback{border-radius:var(--radius-lg); padding:16px 18px; margin:14px 0; display:none; animation:pop .3s var(--ease); border:1.5px solid transparent;}
+#feedback.ok, #cegoFeedback.ok{display:block; background:var(--royal-100); border-color:var(--royal);}
+#feedback.bad, #cegoFeedback.bad{display:block; background:var(--coral-100); border-color:var(--coral);}
+#feedback .big, #cegoFeedback .big{font-size:1.05rem; font-weight:700; margin-bottom:6px; font-family:var(--font-display);}
+#feedback .detail, #cegoFeedback .detail{font-size:.88rem; color:var(--ink-soft); line-height:1.55;}
+#hintBox{display:none; background:var(--surface-2); border:1.5px solid var(--sub); border-radius:var(--radius-md); padding:12px 16px; margin:10px 0; font-size:.9rem; color:var(--ink-soft);}
+
+/* ---------- placar ---------- */
+.stats{display:flex; gap:9px; justify-content:center; flex-wrap:wrap; margin:16px 0;}
+.stat{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); padding:9px 15px; text-align:center; box-shadow:var(--shadow-sm); min-width:78px;}
+.stat b{display:block; font-size:1.2rem; font-family:var(--font-display);}
+.stat span{font-size:.62rem; color:var(--muted); letter-spacing:.1em; text-transform:uppercase;}
+.progressbar{height:9px; background:var(--bg-2); border-radius:99px; overflow:hidden; margin:14px 0 3px;}
+.progressbar div{height:100%; background:linear-gradient(90deg, var(--royal), var(--coral)); width:0%; transition:width .5s var(--ease); position:relative;}
+.progtext{text-align:center; font-size:.76rem; color:var(--muted); margin-bottom:10px;}
+.actions{display:flex; gap:9px; justify-content:center; flex-wrap:wrap; margin-top:14px;}
+.actions .btn{width:auto; flex:0 0 auto; min-width:130px;}
+.actions .btn.small{min-width:0;}
+
+.toast{
+  position:fixed; top:18px; left:50%; transform:translateX(-50%); background:var(--ink); color:var(--surface);
+  padding:10px 22px; border-radius:99px; font-weight:700; z-index:200; animation:pop .3s var(--ease);
+  box-shadow:var(--shadow-lg); font-size:.9rem;
+}
+
+/* ---------- overlay ---------- */
+.overlay{position:fixed; inset:0; background:rgba(14,18,32,.62); backdrop-filter:blur(3px); display:none; align-items:center; justify-content:center; z-index:150; padding:20px;}
+.overlay.active{display:flex;}
+.overlay .box{background:var(--surface); border-radius:var(--radius-lg); padding:30px; text-align:center; max-width:340px; box-shadow:var(--shadow-lg); animation:pop .35s var(--ease);}
+.overlay .box h2{margin-bottom:8px; font-size:1.5rem;}
+
+/* ---------- modo cego ---------- */
+.blind-word{
+  text-align:center; margin:18px 0 22px; font-family:var(--font-display); font-weight:700; font-size:2.4rem;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); padding:16px 20px;
+  box-shadow:var(--shadow-sm); color:var(--royal);
+}
+.line-select{margin-bottom:14px;}
+.line-select > .lbl{font-weight:700; font-size:.78rem; color:var(--muted); margin-bottom:7px; text-transform:uppercase; letter-spacing:.08em;}
+
+/* ---------- rodapé de jogo ---------- */
+.footer-nav{text-align:center; margin-top:20px;}
+
+@media(max-width:520px){
+  .radical-card{width:96px; height:126px;}
+  .ending-card{width:70px; height:92px; font-size:1.1rem;}
+  .hero-title{font-size:2.1rem;}
+  .blind-word{font-size:1.7rem;}
+}
 </style>
 </head>
 <body>
 
-<!-- ============ TELA INICIAL ============ -->
-<div id="start" class="screen active">
-  <div class="logo">PACIÊNCIA <span>VERBAL</span></div>
-  <p class="tagline">Monte os verbos. Aprenda as conjugações.</p>
-  <div class="weather">Aprenda a conjugar verbos de uma maneira divertida</div>
-  <div class="menu">
-    <button class="btn primary" onclick="startGame(1)">JOGAR</button>
-    <button class="btn" onclick="show('learn')">APRENDER</button>
-    <button class="btn" onclick="show('levels')">NÍVEIS</button>
-    <button class="btn" onclick="show('howto')">COMO JOGAR</button>
-  </div>
-</div>
+<div class="bg-deco"><div class="dotgrid"></div><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
 
-<!-- ============ APRENDER ============ -->
-<div id="learn" class="screen">
-  <button class="btn small back" onclick="show('start')">← Voltar</button>
-  <div class="panel">
-    <h3>Radical</h3>
-    <p>É a parte que concentra o <b>significado principal</b> do verbo. Ela permanece na base de todas as formas: <b>AM-</b> (amar), <b>VEND-</b> (vender), <b>PART-</b> (partir).</p>
+<button class="back-fab" id="backFab" onclick="show('start')" aria-label="Voltar ao menu">←</button>
+
+<div class="shell">
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span>Paciência Verbal</div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Alternar modo escuro"><span class="knob">🌙</span></button>
   </div>
-  <div class="panel">
-    <h3>Desinência / terminação</h3>
-    <p>É o elemento que se junta ao radical e indica <b>pessoa, número, tempo e modo</b>.</p>
-    <div class="demo"><span class="mini">AM</span>+<span class="mini">O</span>→<span class="mini" style="color:var(--ind)">AMO</span></div>
-    <div class="demo"><span class="mini">VEND</span>+<span class="mini">O</span>→<span class="mini" style="color:var(--ind)">VENDO</span></div>
-    <div class="demo"><span class="mini">PART</span>+<span class="mini">O</span>→<span class="mini" style="color:var(--ind)">PARTO</span></div>
-  </div>
-  <div class="panel">
-    <h3>Os três modos verbais</h3>
-    <div class="legend">
-      <span class="chip" style="background:var(--ind)">Indicativo — certeza / realidade</span>
-      <span class="chip" style="background:var(--sub)">Subjuntivo — hipótese / desejo</span>
-      <span class="chip" style="background:var(--imp)">Imperativo — ordem / pedido</span>
-      <span class="chip" style="background:var(--nom)">Formas nominais</span>
+
+  <!-- ============ TELA INICIAL ============ -->
+  <div id="start" class="screen active">
+    <span class="eyebrow">Jogo de gramática</span>
+    <h1 class="hero-title">Monte verbos.<br>Aprenda <em>conjugação</em>.</h1>
+    <p class="hero-tag">Combine o radical certo com a desinência certa e observe a palavra se formar — um jeito visual de treinar modos e tempos verbais.</p>
+
+    <div class="equation">
+      <span class="piece">AM</span><span class="op">+</span>
+      <span class="piece">O</span><span class="op">=</span>
+      <span class="piece result">AMO</span>
     </div>
-    <p style="margin-top:10px">As formas verbais mudam conforme tempo, modo e pessoa. O jogo usa apenas <b>formas reais e gramaticalmente corretas</b> — não é qualquer terminação que serve para qualquer radical!</p>
+
+    <div class="menu">
+      <button class="btn primary" onclick="startGame(1)"><span class="lead">▶ Jogar agora</span></button>
+      <button class="btn" onclick="show('learn')"><span>📘 Aprender<small>Radical, desinência e modos</small></span></button>
+      <button class="btn" onclick="show('levels')"><span>🎯 Níveis<small>Do fácil ao mestre</small></span></button>
+      <button class="btn" onclick="startBlind()"><span>🕶️ Modo Cego<small>Descubra tempo e pessoa</small></span></button>
+      <button class="btn" onclick="show('howto')"><span>❓ Como jogar<small>Regras em 6 passos</small></span></button>
+    </div>
   </div>
-  <button class="btn primary" style="width:100%" onclick="startGame(1)">COMEÇAR A JOGAR</button>
+
+  <!-- ============ APRENDER ============ -->
+  <div id="learn" class="screen">
+    <div class="panel">
+      <h3>Radical</h3>
+      <p>É a parte que concentra o <b>significado principal</b> do verbo. Ela permanece na base de todas as formas: <b>AM-</b> (amar), <b>VEND-</b> (vender), <b>PART-</b> (partir).</p>
+    </div>
+    <div class="panel">
+      <h3>Desinência / terminação</h3>
+      <p>É o elemento que se junta ao radical e indica <b>pessoa, número, tempo e modo</b>.</p>
+      <div class="demo"><span class="mini">AM</span>+<span class="mini">O</span>→<span class="mini" style="color:var(--royal)">AMO</span></div>
+      <div class="demo"><span class="mini">VEND</span>+<span class="mini">O</span>→<span class="mini" style="color:var(--royal)">VENDO</span></div>
+      <div class="demo"><span class="mini">PART</span>+<span class="mini">O</span>→<span class="mini" style="color:var(--royal)">PARTO</span></div>
+    </div>
+    <div class="panel">
+      <h3>Os três modos verbais</h3>
+      <div class="legend">
+        <span class="chip" style="background:var(--ind)">Indicativo — certeza / realidade</span>
+        <span class="chip" style="background:var(--sub)">Subjuntivo — hipótese / desejo</span>
+        <span class="chip" style="background:var(--imp)">Imperativo — ordem / pedido</span>
+        <span class="chip" style="background:var(--nom)">Formas nominais</span>
+      </div>
+      <p style="margin-top:10px">As formas verbais mudam conforme tempo, modo e pessoa. O jogo usa apenas <b>formas reais e gramaticalmente corretas</b> — não é qualquer terminação que serve para qualquer radical!</p>
+    </div>
+    <button class="btn coral" style="width:100%" onclick="startGame(1)">Começar a jogar</button>
+  </div>
+
+  <!-- ============ COMO JOGAR ============ -->
+  <div id="howto" class="screen">
+    <div class="panel">
+      <h3>Como jogar</h3>
+      <p>1. Observe a missão da rodada (modo, tempo e pessoa).</p>
+      <p>2. <b>Arraste</b> uma carta do monte de desinências até o radical correto — ou toque na carta e depois no radical.</p>
+      <p>3. Acertou? A palavra se forma, você ganha pontos e vê a explicação gramatical.</p>
+      <p>4. Errou? O jogo mostra a terminação correta e você tenta de novo na próxima rodada.</p>
+      <p>5. Use <b>dica</b> se precisar (vale metade dos pontos), <b>embaralhar</b> para reorganizar o monte e <b>nova rodada</b> para pular.</p>
+      <p>6. Acertos seguidos geram <b>bônus</b>: 3 → +5 · 5 → +10 · 10 → +25. Complete 10 acertos para fechar a fase!</p>
+      <p>7. No <b>Modo Cego</b> a palavra já vem pronta — sua missão é identificar o modo, o tempo e a pessoa que a formaram.</p>
+    </div>
+  </div>
+
+  <!-- ============ NÍVEIS ============ -->
+  <div id="levels" class="screen">
+    <div class="menu" style="grid-template-columns:1fr">
+      <button class="btn" onclick="startGame(1)"><span>🟢 Nível 1 — Fácil<small>Presente, perfeito e futuro do indicativo · 3 cartas</small></span></button>
+      <button class="btn" onclick="startGame(2)"><span>🟡 Nível 2 — Médio<small>Todos os tempos do indicativo · 6 cartas</small></span></button>
+      <button class="btn" onclick="startGame(3)"><span>🟠 Nível 3 — Difícil<small>Indicativo, subjuntivo, imperativo e formas nominais · 8 cartas</small></span></button>
+      <button class="btn" onclick="startGame(4)"><span>🔴 Nível 4 — Mestre<small>Descubra sozinho o verbo e a terminação · 10 cartas</small></span></button>
+    </div>
+  </div>
+
+  <!-- ============ JOGO ============ -->
+  <div id="game" class="screen">
+    <h2>Paciência Verbal — <span id="lvlName"></span></h2>
+    <div class="progressbar"><div id="progFill"></div></div>
+    <div class="progtext" id="progText"></div>
+
+    <div class="chips" id="chips"></div>
+    <div id="hintBox"></div>
+
+    <div class="section">
+      <h4>Radicais</h4>
+      <div class="row" id="radicals"></div>
+    </div>
+
+    <div class="section">
+      <h4>Monte de desinências</h4>
+      <div class="row" id="deck"></div>
+    </div>
+
+    <div class="section">
+      <h4>Área de encaixe</h4>
+      <div class="assembly" id="assembly"></div>
+    </div>
+
+    <div id="feedback"></div>
+
+    <div class="stats">
+      <div class="stat"><b id="sScore">0</b><span>Pontos</span></div>
+      <div class="stat"><b id="sHits">0</b><span>Acertos</span></div>
+      <div class="stat"><b id="sMiss">0</b><span>Erros</span></div>
+      <div class="stat"><b id="sStreak">0</b><span>Sequência</span></div>
+      <div class="stat"><b id="sTime">0s</b><span>Tempo</span></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn small" onclick="giveHint()">💡 Dica</button>
+      <button class="btn small" onclick="shuffleDeck()">🔀 Embaralhar</button>
+      <button class="btn small" onclick="newRound()">▶ Nova rodada</button>
+    </div>
+  </div>
+
+  <!-- ============ MODO CEGO ============ -->
+  <div id="blind" class="screen">
+    <h2>Modo Cego</h2>
+    <div class="progtext" id="cegoProgress"></div>
+    <div class="blind-word" id="cegoWord"></div>
+
+    <div class="line-select">
+      <div class="lbl">Modo verbal</div>
+      <div class="chips" id="cegoModoChips"></div>
+    </div>
+    <div class="line-select" id="cegoTempoWrap">
+      <div class="lbl">Tempo / forma</div>
+      <div class="chips" id="cegoTempoChips"></div>
+    </div>
+    <div class="line-select" id="cegoPessoaWrap">
+      <div class="lbl">Pessoa</div>
+      <div class="chips" id="cegoPessoaChips"></div>
+    </div>
+
+    <div id="cegoFeedback"></div>
+
+    <div class="stats">
+      <div class="stat"><b id="cegoScore">0</b><span>Pontos</span></div>
+      <div class="stat"><b id="cegoHits">0</b><span>Acertos</span></div>
+      <div class="stat"><b id="cegoMiss">0</b><span>Erros</span></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn coral" id="cegoConfirmBtn" onclick="blindConfirm()" disabled>Confirmar</button>
+    </div>
+  </div>
+
 </div>
 
-<!-- ============ COMO JOGAR ============ -->
-<div id="howto" class="screen">
-  <button class="btn small back" onclick="show('start')">← Voltar</button>
-  <div class="panel">
-    <h3> Como jogar</h3>
-    <p>1. Observe a missão da rodada (modo, tempo e pessoa).</p>
-    <p>2. <b>Arraste</b> uma carta do monte de desinências até o radical correto — ou toque na carta e depois no radical.</p>
-    <p>3. Acertou? A palavra se forma, você ganha pontos e vê a explicação gramatical.</p>
-    <p>4. Errou? O jogo mostra a terminação correta e você tenta de novo na próxima rodada.</p>
-    <p>5. Use <b>DICA</b> se precisar (vale metade dos pontos), <b>EMBARALHAR</b> para reorganizar o monte e <b>NOVA RODADA</b> para pular.</p>
-    <p>6. Acertos seguidos geram <b>bônus</b>: 3 → +5 · 5 → +10 · 10 → +25. Complete 10 acertos para fechar a fase!</p>
-  </div>
-</div>
-
-<!-- ============ NÍVEIS ============ -->
-<div id="levels" class="screen">
-  <button class="btn small back" onclick="show('start')">← Voltar</button>
-  <div class="menu" style="max-width:420px">
-    <button class="btn" onclick="startGame(1)">🟢 Nível 1 — Fácil <br><small style="font-weight:400;color:var(--muted)">Presente, perfeito e futuro do indicativo · 3 cartas</small></button>
-    <button class="btn" onclick="startGame(2)">🟡 Nível 2 — Médio <br><small style="font-weight:400;color:var(--muted)">Todos os tempos do indicativo · 6 cartas</small></button>
-    <button class="btn" onclick="startGame(3)">🟠 Nível 3 — Difícil <br><small style="font-weight:400;color:var(--muted)">Indicativo, subjuntivo, imperativo e formas nominais · 8 cartas</small></button>
-    <button class="btn" onclick="startGame(4)">🔴 Nível 4 — Mestre <br><small style="font-weight:400;color:var(--muted)">Descubra sozinho o verbo e a terminação · 10 cartas</small></button>
-  </div>
-</div>
-
-<!-- ============ JOGO ============ -->
-<div id="game" class="screen">
-  <h2>PACIÊNCIA VERBAL — <span id="lvlName"></span></h2>
-  <div class="progressbar"><div id="progFill"></div></div>
-  <div style="text-align:center;font-size:.75rem;color:var(--muted)" id="progText"></div>
-
-  <div class="chips" id="chips"></div>
-  <div id="hintBox"></div>
-
-  <div class="section">
-    <h3>RADICAIS</h3>
-    <div class="row" id="radicals"></div>
-  </div>
-
-  <div class="section">
-    <h3>MONTE DE DESINÊNCIAS</h3>
-    <div class="row" id="deck"></div>
-  </div>
-
-  <div class="section">
-    <h3>ÁREA DE ENCAIXE</h3>
-    <div class="assembly" id="assembly"></div>
-  </div>
-
-  <div id="feedback"></div>
-
-  <div class="stats">
-    <div class="stat"><b id="sScore">0</b><span>PONTOS</span></div>
-    <div class="stat"><b id="sHits">0</b><span>ACERTOS</span></div>
-    <div class="stat"><b id="sMiss">0</b><span>ERROS</span></div>
-    <div class="stat"><b id="sStreak">0</b><span>SEQUÊNCIA</span></div>
-    <div class="stat"><b id="sTime">0s</b><span>TEMPO</span></div>
-  </div>
-
-  <div class="actions">
-    <button class="btn small hint" onclick="giveHint()">💡 DICA</button>
-    <button class="btn small" onclick="shuffleDeck()">🔀 EMBARALHAR</button>
-    <button class="btn small warn" onclick="newRound()">▶ NOVA RODADA</button>
-    <button class="btn small" onclick="show('start')">VOLTAR AO MENU</button>
-  </div>
-</div>
-
-<!-- ============ FIM DE FASE ============ -->
+<!-- ============ FIM DE FASE (níveis) ============ -->
 <div class="overlay" id="winOverlay">
   <div class="box">
     <h2>🏆 Fase concluída!</h2>
-    <p id="winText" style="margin-bottom:16px;color:var(--muted)"></p>
-    <div class="menu">
-      <button class="btn primary" id="nextLvlBtn">PRÓXIMO NÍVEL</button>
-      <button class="btn" onclick="closeWin();startGame(st.level)">JOGAR DE NOVO</button>
-      <button class="btn" onclick="closeWin();show('start')">MENU</button>
+    <p id="winText" style="margin-bottom:16px;color:var(--ink-soft)"></p>
+    <div class="menu" style="display:flex; flex-direction:column;">
+      <button class="btn primary" id="nextLvlBtn">Próximo nível</button>
+      <button class="btn" onclick="closeWin();startGame(st.level)">Jogar de novo</button>
+      <button class="btn ghost" onclick="closeWin();show('start')">Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FIM DO MODO CEGO ============ -->
+<div class="overlay" id="blindWinOverlay">
+  <div class="box">
+    <h2>🕶️ Rodada concluída!</h2>
+    <p id="blindWinText" style="margin-bottom:16px;color:var(--ink-soft)"></p>
+    <div class="menu" style="display:flex; flex-direction:column;">
+      <button class="btn primary" onclick="closeBlindWin();startBlind()">Jogar de novo</button>
+      <button class="btn ghost" onclick="closeBlindWin();show('start')">Menu</button>
     </div>
   </div>
 </div>
 
 <script>
+/* =========================================================
+   TEMA (claro / escuro)
+   ========================================================= */
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  const knob = document.querySelector('#themeToggle .knob');
+  if(knob) knob.textContent = t === 'dark' ? '☀️' : '🌙';
+  try{ localStorage.setItem('pv-theme', t); }catch(e){}
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
+(function initTheme(){
+  let saved=null;
+  try{ saved = localStorage.getItem('pv-theme'); }catch(e){}
+  if(!saved){ saved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+  applyTheme(saved);
+})();
+
 /* ================= DADOS GRAMATICAIS =================
    Tabela interna de formas reais: [1ª conj (amar), 2ª (vender), 3ª (partir)]
    Cada linha: eu, tu, ele/ela, nós, vós, eles/elas          */
@@ -261,10 +521,10 @@ const E={
 const MODO_NAME={ind:'Indicativo',sub:'Subjuntivo',imp:'Imperativo',nom:'Forma Nominal'};
 const MODO_COLOR={ind:'var(--ind)',sub:'var(--sub)',imp:'var(--imp)',nom:'var(--nom)'};
 const LEVELS={
- 1:{name:'Fácil',pool:[['ind','Presente'],['ind','Pretérito Perfeito'],['ind','Futuro do Presente']],options:3,anyRadical:false,showInfo:true},
- 2:{name:'Médio',pool:Object.keys(E.ind).map(t=>['ind',t]),options:6,anyRadical:false,showInfo:true},
- 3:{name:'Difícil',pool:[].concat(Object.keys(E.ind).map(t=>['ind',t]),Object.keys(E.sub).map(t=>['sub',t]),Object.keys(E.imp).map(t=>['imp',t]),Object.keys(E.nom).map(t=>['nom',t])),options:8,anyRadical:false,showInfo:true},
- 4:{name:'Desafio',pool:[].concat(Object.keys(E.ind).map(t=>['ind',t]),Object.keys(E.sub).map(t=>['sub',t]),Object.keys(E.imp).map(t=>['imp',t]),Object.keys(E.nom).map(t=>['nom',t])),options:10,anyRadical:true,showInfo:true}
+ 1:{name:'Fácil',pool:[['ind','Presente'],['ind','Pretérito Perfeito'],['ind','Futuro do Presente']],options:3,anyRadical:false},
+ 2:{name:'Médio',pool:Object.keys(E.ind).map(t=>['ind',t]),options:6,anyRadical:false},
+ 3:{name:'Difícil',pool:[].concat(Object.keys(E.ind).map(t=>['ind',t]),Object.keys(E.sub).map(t=>['sub',t]),Object.keys(E.imp).map(t=>['imp',t]),Object.keys(E.nom).map(t=>['nom',t])),options:8,anyRadical:false},
+ 4:{name:'Desafio',pool:[].concat(Object.keys(E.ind).map(t=>['ind',t]),Object.keys(E.sub).map(t=>['sub',t]),Object.keys(E.imp).map(t=>['imp',t]),Object.keys(E.nom).map(t=>['nom',t])),options:10,anyRadical:true}
 };
 const GOAL=10;
 
@@ -279,9 +539,13 @@ function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   $(id).classList.add('active');
   if(id!=='game'&&timerInt){clearInterval(timerInt);timerInt=null;}
+  const fab=$('backFab');
+  if(id==='start'){ fab.classList.remove('show'); document.body.classList.remove('has-back-fab'); }
+  else{ fab.classList.add('show'); document.body.classList.add('has-back-fab'); }
 }
+
 function startGame(level){
-  st={level,score:0,hits:0,miss:0,streak:0,progress:0,locked:false};
+  st={level,score:0,hits:0,miss:0,streak:0,progress:0,locked:false,conquered:{AM:[],VEND:[],PART:[]}};
   show('game');
   $('lvlName').textContent='Nível '+level+' · '+LEVELS[level].name;
   updateStats();newRound();
@@ -310,33 +574,33 @@ function buildDeck(){
 }
 function renderRound(){
   const L=LEVELS[st.level];
-  // chips de informação
   const c=$('chips');c.innerHTML='';
-  const add=(txt,color)=>{const s=document.createElement('span');s.className='chip';s.style.background=color||'#475569';s.textContent=txt;c.appendChild(s);};
+  const add=(txt,color)=>{const s=document.createElement('span');s.className='chip';s.style.background=color||'var(--ink-soft)';s.textContent=txt;c.appendChild(s);};
   add('Modo: '+MODO_NAME[st.modo],MODO_COLOR[st.modo]);
   add((st.modo==='nom'?'Forma: ':'Tempo: ')+st.tempo);
   if(st.modo!=='nom')add('Pessoa: '+PESSOAS[st.pIdx]);
-  if(L.anyRadical)add('🎯 Escolha o radical e a terminação!','#7c3aed');
-  else add('Verbo da rodada: '+VERBS[st.verb].inf.toUpperCase(),'#0ea5e9');
-  // radicais
+  if(L.anyRadical)add('🎯 Escolha o radical e a terminação!','var(--coral)');
+  else add('Verbo da rodada: '+VERBS[st.verb].inf.toUpperCase(),'var(--royal)');
+
   const r=$('radicals');r.innerHTML='';
   VERBS.forEach((v,i)=>{
     const d=document.createElement('div');
     d.className='cardv radical-card'+((!L.anyRadical&&i===st.verb)?' target':'');
     d.dataset.v=i;
     d.style.borderBottomColor=MODO_COLOR[st.modo];
-    d.innerHTML='<div class="rad">'+v.rad+'-</div><div class="inf">verbo '+v.inf+'</div><div class="tag">RADICAL</div>';
+    const badgesHtml = st.conquered[v.rad].slice(-4).map(w=>'<span class="badge">'+w+'</span>').join('');
+    d.innerHTML='<div class="rad">'+v.rad+'-</div><div class="inf">verbo '+v.inf+'</div><div class="tag">Radical</div><div class="badges">'+badgesHtml+'</div>';
     d.onclick=()=>{if(st.selectedCard!=null&&!st.locked)attempt(i,st.selectedCard);};
     r.appendChild(d);
   });
-  // monte
+
   const dk=$('deck');dk.innerHTML='';
   st.deck.forEach(e=>{
     const d=document.createElement('div');
     d.className='cardv ending-card';d.textContent=e.toUpperCase();d.dataset.e=e;
     dk.appendChild(d);enableDrag(d);
   });
-  // área de encaixe
+
   $('assembly').innerHTML='<div class="slot filled">'+(L.anyRadical?'?':VERBS[st.verb].rad+'-')+'</div><span>+</span><div class="slot" id="dropSlot">?</div><span>=</span><div class="slot" id="resSlot">?</div>';
   $('feedback').className='';$('feedback').innerHTML='';
   $('hintBox').style.display='none';
@@ -355,7 +619,7 @@ function enableDrag(card){
       if(!moved&&Math.hypot(e.clientX-startX,e.clientY-startY)<6)return;
       moved=true;
       if(!ghost){ghost=card.cloneNode(true);ghost.classList.add('ghost');document.body.appendChild(ghost);card.style.opacity=.35;}
-      ghost.style.left=(e.clientX-43)+'px';ghost.style.top=(e.clientY-55)+'px';
+      ghost.style.left=(e.clientX-42)+'px';ghost.style.top=(e.clientY-54)+'px';
       document.querySelectorAll('.radical-card').forEach(rc=>{
         const b=rc.getBoundingClientRect();
         rc.classList.toggle('over',e.clientX>b.left&&e.clientX<b.right&&e.clientY>b.top&&e.clientY<b.bottom);
@@ -368,7 +632,7 @@ function enableDrag(card){
       if(moved){
         const target=document.elementsFromPoint(e.clientX,e.clientY).find(el=>el.classList&&el.classList.contains('radical-card'));
         if(target)attempt(+target.dataset.v,card.dataset.e);
-      }else{ // clique = selecionar
+      }else{
         document.querySelectorAll('.ending-card').forEach(x=>x.classList.remove('selected'));
         if(st.selectedCard===card.dataset.e){st.selectedCard=null;}
         else{st.selectedCard=card.dataset.e;card.classList.add('selected');}
@@ -393,11 +657,12 @@ function attempt(vIdx,ending){
     if(st.streak===3)bonus=5;else if(st.streak===5)bonus=10;else if(st.streak===10)bonus=25;
     if(bonus){st.score+=bonus;toast('🔥 Sequência de '+st.streak+'! Bônus +'+bonus);}
     const word=(neg?'não ':'')+VERBS[vIdx].rad.toLowerCase()+ok;
+    st.conquered[VERBS[vIdx].rad].push(word);
     $('dropSlot').textContent=ok.toUpperCase();$('dropSlot').classList.add('filled');
     $('resSlot').innerHTML='<span class="result-word">'+word.toUpperCase()+'</span>';$('resSlot').classList.add('filled');
-    let frase = st.modo==='nom'?'“'+word+'”'
-      : st.modo==='imp'?'“'+cap(word)+', '+PESSOAS[st.pIdx].split('/')[0]+'!”'
-      : '“'+cap(PESSOAS[st.pIdx].split('/')[0])+' '+word+'.”';
+    let frase = st.modo==='nom'?'"'+word+'"'
+      : st.modo==='imp'?'"'+cap(word)+', '+PESSOAS[st.pIdx].split('/')[0]+'!"'
+      : '"'+cap(PESSOAS[st.pIdx].split('/')[0])+' '+word+'."';
     $('feedback').className='ok';
     $('feedback').innerHTML='<div class="big">✅ Correto! '+frase+' <small>(+'+pts+' pts)</small></div>'+
       '<div class="detail"><b>'+VERBS[vIdx].rad+' + '+ok.toUpperCase()+' = '+word.toUpperCase()+'</b><br>'+
@@ -409,14 +674,14 @@ function attempt(vIdx,ending){
 }
 function wrong(ending,extra){
   st.miss++;st.streak=0;updateStats();
-  const ok=correctEnding(LEVELS[st.level].anyRadical?st.verb:st.verb);
+  const ok=correctEnding(st.verb);
   const v=VERBS[st.verb];
   const neg=st.modo==='imp'&&st.tempo==='Negativo';
   const word=(neg?'não ':'')+v.rad.toLowerCase()+ok;
   $('dropSlot').textContent=ending.toUpperCase();
   $('dropSlot').classList.add('shake');setTimeout(()=>$('dropSlot').classList.remove('shake'),400);
   $('feedback').className='bad';
-  $('feedback').innerHTML='<div class="big">❌ RESPOSTA INCORRETA';
+  $('feedback').innerHTML='<div class="big">❌ Resposta incorreta';
 }
 function giveHint(){
   if(st.locked)return;
@@ -450,6 +715,109 @@ function win(){
   $('winOverlay').classList.add('active');
 }
 function closeWin(){$('winOverlay').classList.remove('active');}
+
+/* =========================================================
+   MODO CEGO — identifique modo, tempo e pessoa da palavra pronta
+   ========================================================= */
+let cg={};
+function startBlind(){
+  cg={round:0,total:8,score:0,hits:0,miss:0,selModo:null,selTempo:null,selPessoa:null,waiting:false};
+  show('blind');
+  newBlindRound();
+}
+function newBlindRound(){
+  const modos=['ind','sub','imp','nom'];
+  const modo=rnd(modos);
+  const tempo=rnd(Object.keys(E[modo]));
+  const verb=Math.floor(Math.random()*3);
+  let pIdx;
+  if(modo==='nom')pIdx=0;
+  else if(modo==='imp')pIdx=rnd([1,2,3,4,5]);
+  else pIdx=Math.floor(Math.random()*6);
+  const ending=E[modo][tempo][VERBS[verb].cls][pIdx];
+  const neg=modo==='imp'&&tempo==='Negativo';
+  cg.answer={modo,tempo,pIdx};
+  cg.word=(neg?'não ':'')+VERBS[verb].rad.toLowerCase()+ending;
+  cg.selModo=null;cg.selTempo=null;cg.selPessoa=null;cg.waiting=false;
+  renderBlind();
+}
+function renderBlind(){
+  $('cegoWord').textContent=cg.word.toUpperCase();
+  $('cegoProgress').textContent='Palavra '+(cg.round+1)+' / '+cg.total;
+
+  const modos=['ind','sub','imp','nom'];
+  const mc=$('cegoModoChips');mc.innerHTML='';
+  modos.forEach(m=>{
+    const b=document.createElement('button');
+    b.className='chip selectable'+(cg.selModo===m?' ativo':'');
+    b.textContent=MODO_NAME[m];
+    b.disabled=cg.waiting;
+    b.onclick=()=>{cg.selModo=m;cg.selTempo=null;cg.selPessoa=null;renderBlind();};
+    mc.appendChild(b);
+  });
+
+  const tempoWrap=$('cegoTempoWrap'), pessoaWrap=$('cegoPessoaWrap');
+  if(cg.selModo){
+    tempoWrap.style.display='block';
+    const tc=$('cegoTempoChips');tc.innerHTML='';
+    Object.keys(E[cg.selModo]).forEach(t=>{
+      const b=document.createElement('button');
+      b.className='chip selectable'+(cg.selTempo===t?' ativo':'');
+      b.textContent=t;b.disabled=cg.waiting;
+      b.onclick=()=>{cg.selTempo=t;cg.selPessoa=null;renderBlind();};
+      tc.appendChild(b);
+    });
+  }else tempoWrap.style.display='none';
+
+  const precisaPessoa=cg.selModo&&cg.selModo!=='nom';
+  if(precisaPessoa&&cg.selTempo){
+    pessoaWrap.style.display='block';
+    const pc=$('cegoPessoaChips');pc.innerHTML='';
+    const opts=cg.selModo==='imp'?[1,2,3,4,5]:[0,1,2,3,4,5];
+    opts.forEach(i=>{
+      const b=document.createElement('button');
+      b.className='chip selectable'+(cg.selPessoa===i?' ativo':'');
+      b.textContent=PESSOAS[i];b.disabled=cg.waiting;
+      b.onclick=()=>{cg.selPessoa=i;renderBlind();};
+      pc.appendChild(b);
+    });
+  }else pessoaWrap.style.display='none';
+
+  const podeConfirmar=!cg.waiting&&cg.selModo&&cg.selTempo&&(!precisaPessoa||cg.selPessoa!==null);
+  $('cegoConfirmBtn').disabled=!podeConfirmar;
+  $('cegoFeedback').className='';$('cegoFeedback').innerHTML='';
+  $('cegoScore').textContent=cg.score;$('cegoHits').textContent=cg.hits;$('cegoMiss').textContent=cg.miss;
+}
+function blindConfirm(){
+  if(cg.waiting)return;
+  const a=cg.answer;
+  const certoModo=cg.selModo===a.modo;
+  const certoTempo=cg.selTempo===a.tempo;
+  const precisaPessoa=a.modo!=='nom';
+  const certoPessoa=!precisaPessoa||cg.selPessoa===a.pIdx;
+  const acertou=certoModo&&certoTempo&&certoPessoa;
+  cg.waiting=true;
+  const fb=$('cegoFeedback');
+  const respostaTxt=MODO_NAME[a.modo]+' · '+a.tempo+(precisaPessoa?' · '+P_LABEL[a.pIdx]:'');
+  if(acertou){
+    cg.hits++;cg.score+=10;
+    fb.className='ok';fb.innerHTML='<div class="big">✅ Isso mesmo!</div><div class="detail">'+respostaTxt+'</div>';
+  }else{
+    cg.miss++;
+    fb.className='bad';fb.innerHTML='<div class="big">❌ Era diferente</div><div class="detail">Resposta certa: '+respostaTxt+'</div>';
+  }
+  $('cegoScore').textContent=cg.score;$('cegoHits').textContent=cg.hits;$('cegoMiss').textContent=cg.miss;
+  $('cegoConfirmBtn').disabled=true;
+  setTimeout(()=>{
+    cg.round++;
+    if(cg.round>=cg.total)finishBlind();else newBlindRound();
+  },1400);
+}
+function finishBlind(){
+  $('blindWinText').textContent='Pontuação: '+cg.score+' · Acertos: '+cg.hits+' de '+cg.total;
+  $('blindWinOverlay').classList.add('active');
+}
+function closeBlindWin(){$('blindWinOverlay').classList.remove('active');}
 </script>
 </body>
 </html>

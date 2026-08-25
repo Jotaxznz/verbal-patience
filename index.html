@@ -314,10 +314,10 @@ body.has-back-fab .brand{opacity:0; pointer-events:none;}
 
     <div class="menu">
       <button class="btn primary" onclick="startGame(1)"><span class="lead">▶ Jogar agora</span></button>
-      <button class="btn" onclick="show('learn')"><span>📘 Aprender<small>Radical, desinência e modos</small></span></button>
-      <button class="btn" onclick="show('levels')"><span>🎯 Níveis<small>Do fácil ao mestre</small></span></button>
-      <button class="btn" onclick="startBlind()"><span>🕶️ Modo Cego<small>Descubra tempo e pessoa</small></span></button>
-      <button class="btn" onclick="show('howto')"><span>❓ Como jogar<small>Regras em 6 passos</small></span></button>
+      <button class="btn" onclick="show('learn')"><span> Aprender<small>Radical, desinência e modos</small></span></button>
+      <button class="btn" onclick="show('levels')"><span> Níveis<small>Do fácil ao mestre</small></span></button>
+      <button class="btn" onclick="startBlind()"><span> Modo Cego<small>Descubra tempo e pessoa</small></span></button>
+      <button class="btn" onclick="show('howto')"><span> Como jogar<small>Regras em 6 passos</small></span></button>
     </div>
   </div>
 
@@ -664,10 +664,7 @@ function attempt(vIdx,ending){
       : st.modo==='imp'?'"'+cap(word)+', '+PESSOAS[st.pIdx].split('/')[0]+'!"'
       : '"'+cap(PESSOAS[st.pIdx].split('/')[0])+' '+word+'."';
     $('feedback').className='ok';
-    $('feedback').innerHTML='<div class="big">✅ Correto! '+frase+' <small>(+'+pts+' pts)</small></div>'+
-      '<div class="detail"><b>'+VERBS[vIdx].rad+' + '+ok.toUpperCase()+' = '+word.toUpperCase()+'</b><br>'+
-      'Verbo: <b>'+VERBS[vIdx].inf+'</b> · Modo: <b>'+MODO_NAME[st.modo]+'</b> · '+(st.modo==='nom'?'Forma':'Tempo')+': <b>'+st.tempo+'</b>'+
-      (st.modo!=='nom'?' · Pessoa: <b>'+P_LABEL[st.pIdx]+'</b>':'')+'</div>';
+    $('feedback').innerHTML='<div class="big">✅ Resposta correta!';
     updateStats();
     if(st.progress>=GOAL)setTimeout(win,1200);else setTimeout(newRound,2200);
   }else wrong(ending);

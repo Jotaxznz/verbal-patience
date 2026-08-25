@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paciência Verbal</title>
+<style>
+  :root{
+    --ind:#22c55e; --sub:#eab308; --imp:#ef4444; --nom:#3b82f6;
+    --bg:#f1f5f9; --card:#ffffff; --ink:#1e293b; --muted:#64748b;
+    --mesa:#e7efe7;
+  }
+  *{box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI',system-ui,Arial,sans-serif;}
+  body{background:var(--bg); color:var(--ink); min-height:100vh;}
+  .screen{display:none; max-width:960px; margin:0 auto; padding:20px;}
+  .screen.active{display:block;}
+
+  /* ---------- Tela inicial ---------- */
+  #start{text-align:center; padding-top:8vh;}
+  .logo{font-size:2.6rem; font-weight:800; letter-spacing:2px;}
+  .logo span{color:var(--ind);}
+  .tagline{color:var(--muted); margin:10px 0 6px; font-size:1.1rem;}
+  .weather{display:inline-block; background:#fff; border-radius:99px; padding:8px 18px;
+    margin:14px 0 30px; box-shadow:0 2px 8px rgba(0,0,0,.08); font-size:.95rem; color:var(--muted);}
+  .menu{display:flex; flex-direction:column; gap:12px; max-width:320px; margin:0 auto;}
+  .btn{border:none; border-radius:12px; padding:14px 22px; font-size:1.05rem; font-weight:700;
+    cursor:pointer; transition:transform .15s, box-shadow .15s; background:#fff; color:var(--ink);
+    box-shadow:0 3px 10px rgba(0,0,0,.10);}
+  .btn:hover{transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,.15);}
+  .btn.primary{background:var(--ind); color:#fff;}
+  .btn.small{padding:8px 14px; font-size:.85rem; border-radius:9px;}
+  .back{margin-bottom:16px; background:#e2e8f0;}
+
+  /* ---------- Cartas ---------- */
+  .cardv{display:inline-flex; flex-direction:column; align-items:center; justify-content:center;
+    background:var(--card); border-radius:12px; border:2px solid #cbd5e1;
+    box-shadow:0 3px 6px rgba(0,0,0,.10); user-select:none; touch-action:none;}
+  .radical-card{width:120px; height:150px; border-bottom:6px solid var(--ind); cursor:pointer;
+    transition:transform .15s, box-shadow .15s;}
+  .radical-card .rad{font-size:1.8rem; font-weight:800;}
+  .radical-card .inf{font-size:.8rem; color:var(--muted); margin-top:6px;}
+  .radical-card .tag{font-size:.62rem; letter-spacing:1px; color:#94a3b8; margin-top:10px;}
+  .radical-card.target{outline:3px solid var(--ind); outline-offset:3px;}
+  .radical-card.over{transform:scale(1.06); box-shadow:0 8px 18px rgba(34,197,94,.35);}
+  .ending-card{width:86px; height:110px; font-size:1.35rem; font-weight:800; cursor:grab;
+    transition:transform .12s;}
+  .ending-card:hover{transform:translateY(-6px);}
+  .ending-card.selected{outline:3px solid var(--nom); outline-offset:2px; transform:translateY(-6px);}
+  .ghost{position:fixed; pointer-events:none; z-index:99; opacity:.9; transform:rotate(-4deg) scale(1.05);}
+
+  /* ---------- Mesa ---------- */
+  #game h2{font-size:1.3rem; letter-spacing:1px; text-align:center; margin-bottom:6px;}
+  .chips{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:10px 0 4px;}
+  .chip{padding:6px 14px; border-radius:99px; font-size:.85rem; font-weight:700; color:#fff;}
+  .chip.info{background:#475569;}
+  .section{background:var(--mesa); border-radius:16px; padding:14px; margin:14px 0;}
+  .section h3{font-size:.75rem; letter-spacing:2px; color:var(--muted); margin-bottom:10px; text-align:center;}
+  .row{display:flex; gap:14px; justify-content:center; flex-wrap:wrap;}
+  .assembly{display:flex; align-items:center; justify-content:center; gap:10px; min-height:70px;
+    font-size:1.5rem; font-weight:800; flex-wrap:wrap;}
+  .slot{min-width:70px; padding:10px 14px; border:2px dashed #94a3b8; border-radius:10px;
+    color:#94a3b8; font-size:1.2rem; text-align:center;}
+  .slot.filled{border-style:solid; color:var(--ink); background:#fff;}
+  .result-word{color:var(--ind); animation:pop .4s;}
+  @keyframes pop{0%{transform:scale(.4);}70%{transform:scale(1.2);}100%{transform:scale(1);}}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}
+  .shake{animation:shake .35s;}
+
+  /* ---------- Feedback ---------- */
+  #feedback{border-radius:14px; padding:14px 18px; margin:14px 0; display:none; animation:pop .3s;}
+  #feedback.ok{display:block; background:#dcfce7; border:2px solid var(--ind);}
+  #feedback.bad{display:block; background:#fee2e2; border:2px solid var(--imp);}
+  #feedback .big{font-size:1.15rem; font-weight:800; margin-bottom:6px;}
+  #feedback .detail{font-size:.9rem; color:#334155; line-height:1.5;}
+  #hintBox{display:none; background:#fef9c3; border:2px solid var(--sub); border-radius:12px;
+    padding:10px 16px; margin:10px 0; font-size:.92rem;}
+
+  /* ---------- Placar ---------- */
+  .stats{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:14px 0;}
+  .stat{background:#fff; border-radius:12px; padding:8px 16px; text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.08); min-width:86px;}
+  .stat b{display:block; font-size:1.25rem;}
+  .stat span{font-size:.7rem; color:var(--muted); letter-spacing:1px;}
+  .progressbar{height:10px; background:#e2e8f0; border-radius:99px; overflow:hidden; margin:6px 0 2px;}
+  .progressbar div{height:100%; background:var(--ind); width:0%; transition:width .4s;}
+  .actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:10px;}
+  .btn.hint{background:var(--sub); color:#fff;}
+  .btn.warn{background:#f97316; color:#fff;}
+  .toast{position:fixed; top:18px; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff;
+    padding:10px 22px; border-radius:99px; font-weight:700; z-index:200; animation:pop .3s;}
+
+  /* ---------- Aprender / Como jogar / Níveis ---------- */
+  .panel{background:#fff; border-radius:16px; padding:20px; margin-bottom:14px; box-shadow:0 2px 8px rgba(0,0,0,.07);}
+  .panel h3{margin-bottom:8px;}
+  .panel p{line-height:1.6; color:#334155; margin-bottom:8px;}
+  .demo{display:flex; gap:8px; align-items:center; justify-content:center; font-weight:800;
+    font-size:1.2rem; margin:10px 0; flex-wrap:wrap;}
+  .demo .mini{background:var(--mesa); border:2px solid #cbd5e1; border-radius:8px; padding:6px 12px;}
+  .legend{display:flex; gap:10px; flex-wrap:wrap;}
+  .overlay{position:fixed; inset:0; background:rgba(15,23,42,.65); display:none;
+    align-items:center; justify-content:center; z-index:150;}
+  .overlay.active{display:flex;}
+  .overlay .box{background:#fff; border-radius:18px; padding:30px; text-align:center; max-width:340px;}
+  .overlay .box h2{margin-bottom:10px;}
+  @media(max-width:520px){
+    .radical-card{width:96px; height:126px;}
+    .ending-card{width:70px; height:92px; font-size:1.1rem;}
+    .logo{font-size:2rem;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ TELA INICIAL ============ -->
+<div id="start" class="screen active">
+  <div class="logo">PACIÊNCIA <span>VERBAL</span></div>
+  <p class="tagline">Monte os verbos. Aprenda as conjugações.</p>
+  <div class="weather">Aprenda a conjugar verbos de uma maneira divertida</div>
+  <div class="menu">
+    <button class="btn primary" onclick="startGame(1)">JOGAR</button>
+    <button class="btn" onclick="show('learn')">APRENDER</button>
+    <button class="btn" onclick="show('levels')">NÍVEIS</button>
+    <button class="btn" onclick="show('howto')">COMO JOGAR</button>
+  </div>
+</div>
+
+<!-- ============ APRENDER ============ -->
+<div id="learn" class="screen">
+  <button class="btn small back" onclick="show('start')">← Voltar</button>
+  <div class="panel">
+    <h3>Radical</h3>
+    <p>É a parte que concentra o <b>significado principal</b> do verbo. Ela permanece na base de todas as formas: <b>AM-</b> (amar), <b>VEND-</b> (vender), <b>PART-</b> (partir).</p>
+  </div>
+  <div class="panel">
+    <h3>Desinência / terminação</h3>
+    <p>É o elemento que se junta ao radical e indica <b>pessoa, número, tempo e modo</b>.</p>
+    <div class="demo"><span class="mini">AM</span>+<span class="mini">O</span>→<span class="mini" style="color:var(--ind)">AMO</span></div>
+    <div class="demo"><span class="mini">VEND</span>+<span class="mini">O</span>→<span class="mini" style="color:var(--ind)">VENDO</span></div>
+    <div class="demo"><span class="mini">PART</span>+<span class="mini">O</span>→<span class="mini" style="color:var(--ind)">PARTO</span></div>
+  </div>
+  <div class="panel">
+    <h3>Os três modos verbais</h3>
+    <div class="legend">
+      <span class="chip" style="background:var(--ind)">Indicativo — certeza / realidade</span>
+      <span class="chip" style="background:var(--sub)">Subjuntivo — hipótese / desejo</span>
+      <span class="chip" style="background:var(--imp)">Imperativo — ordem / pedido</span>
+      <span class="chip" style="background:var(--nom)">Formas nominais</span>
+    </div>
+    <p style="margin-top:10px">As formas verbais mudam conforme tempo, modo e pessoa. O jogo usa apenas <b>formas reais e gramaticalmente corretas</b> — não é qualquer terminação que serve para qualquer radical!</p>
+  </div>
+  <button class="btn primary" style="width:100%" onclick="startGame(1)">COMEÇAR A JOGAR</button>
+</div>
+
+<!-- ============ COMO JOGAR ============ -->
+<div id="howto" class="screen">
+  <button class="btn small back" onclick="show('start')">← Voltar</button>
+  <div class="panel">
+    <h3> Como jogar</h3>
+    <p>1. Observe a missão da rodada (modo, tempo e pessoa).</p>
+    <p>2. <b>Arraste</b> uma carta do monte de desinências até o radical correto — ou toque na carta e depois no radical.</p>
+    <p>3. Acertou? A palavra se forma, você ganha pontos e vê a explicação gramatical.</p>
+    <p>4. Errou? O jogo mostra a terminação correta e você tenta de novo na próxima rodada.</p>
+    <p>5. Use <b>DICA</b> se precisar (vale metade dos pontos), <b>EMBARALHAR</b> para reorganizar o monte e <b>NOVA RODADA</b> para pular.</p>
+    <p>6. Acertos seguidos geram <b>bônus</b>: 3 → +5 · 5 → +10 · 10 → +25. Complete 10 acertos para fechar a fase!</p>
+  </div>
+</div>
+
+<!-- ============ NÍVEIS ============ -->
+<div id="levels" class="screen">
+  <button class="btn small back" onclick="show('start')">← Voltar</button>
+  <div class="menu" style="max-width:420px">
+    <button class="btn" onclick="startGame(1)">🟢 Nível 1 — Fácil <br><small style="font-weight:400;color:var(--muted)">Presente, perfeito e futuro do indicativo · 3 cartas</small></button>
+    <button class="btn" onclick="startGame(2)">🟡 Nível 2 — Médio <br><small style="font-weight:400;color:var(--muted)">Todos os tempos do indicativo · 6 cartas</small></button>
+    <button class="btn" onclick="startGame(3)">🟠 Nível 3 — Difícil <br><small style="font-weight:400;color:var(--muted)">Indicativo, subjuntivo, imperativo e formas nominais · 8 cartas</small></button>
+    <button class="btn" onclick="startGame(4)">🔴 Nível 4 — Mestre <br><small style="font-weight:400;color:var(--muted)">Descubra sozinho o verbo e a terminação · 10 cartas</small></button>
+  </div>
+</div>
+
+<!-- ============ JOGO ============ -->
+<div id="game" class="screen">
+  <h2>PACIÊNCIA VERBAL — <span id="lvlName"></span></h2>
+  <div class="progressbar"><div id="progFill"></div></div>
+  <div style="text-align:center;font-size:.75rem;color:var(--muted)" id="progText"></div>
+
+  <div class="chips" id="chips"></div>
+  <div id="hintBox"></div>
+
+  <div class="section">
+    <h3>RADICAIS</h3>
+    <div class="row" id="radicals"></div>
+  </div>
+
+  <div class="section">
+    <h3>MONTE DE DESINÊNCIAS</h3>
+    <div class="row" id="deck"></div>
+  </div>
+
+  <div class="section">
+    <h3>ÁREA DE ENCAIXE</h3>
+    <div class="assembly" id="assembly"></div>
+  </div>
+
+  <div id="feedback"></div>
+
+  <div class="stats">
+    <div class="stat"><b id="sScore">0</b><span>PONTOS</span></div>
+    <div class="stat"><b id="sHits">0</b><span>ACERTOS</span></div>
+    <div class="stat"><b id="sMiss">0</b><span>ERROS</span></div>
+    <div class="stat"><b id="sStreak">0</b><span>SEQUÊNCIA</span></div>
+    <div class="stat"><b id="sTime">0s</b><span>TEMPO</span></div>
+  </div>
+
+  <div class="actions">
+    <button class="btn small hint" onclick="giveHint()">💡 DICA</button>
+    <button class="btn small" onclick="shuffleDeck()">🔀 EMBARALHAR</button>
+    <button class="btn small warn" onclick="newRound()">▶ NOVA RODADA</button>
+    <button class="btn small" onclick="show('start')">VOLTAR AO MENU</button>
+  </div>
+</div>
+
+<!-- ============ FIM DE FASE ============ -->
+<div class="overlay" id="winOverlay">
+  <div class="box">
+    <h2>🏆 Fase concluída!</h2>
+    <p id="winText" style="margin-bottom:16px;color:var(--muted)"></p>
+    <div class="menu">
+      <button class="btn primary" id="nextLvlBtn">PRÓXIMO NÍVEL</button>
+      <button class="btn" onclick="closeWin();startGame(st.level)">JOGAR DE NOVO</button>
+      <button class="btn" onclick="closeWin();show('start')">MENU</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= DADOS GRAMATICAIS =================
+   Tabela interna de formas reais: [1ª conj (amar), 2ª (vender), 3ª (partir)]
+   Cada linha: eu, tu, ele/ela, nós, vós, eles/elas          */
+const VERBS=[{inf:'amar',rad:'AM',cls:0},{inf:'vender',rad:'VEND',cls:1},{inf:'partir',rad:'PART',cls:2}];
+const PESSOAS=['eu','tu','ele/ela','nós','vós','eles/elas'];
+const P_LABEL=['1ª pessoa do singular','2ª pessoa do singular','3ª pessoa do singular','1ª pessoa do plural','2ª pessoa do plural','3ª pessoa do plural'];
+const E={
+ ind:{
+  'Presente':[['o','as','a','amos','ais','am'],['o','es','e','emos','eis','em'],['o','es','e','imos','is','em']],
+  'Pretérito Perfeito':[['ei','aste','ou','amos','astes','aram'],['i','este','eu','emos','estes','eram'],['i','iste','iu','imos','istes','iram']],
+  'Pretérito Imperfeito':[['ava','avas','ava','ávamos','áveis','avam'],['ia','ias','ia','íamos','íeis','iam'],['ia','ias','ia','íamos','íeis','iam']],
+  'Pretérito Mais-que-perfeito':[['ara','aras','ara','áramos','áreis','aram'],['era','eras','era','êramos','êreis','eram'],['ira','iras','ira','íramos','íreis','iram']],
+  'Futuro do Presente':[['arei','arás','ará','aremos','areis','arão'],['erei','erás','erá','eremos','ereis','erão'],['irei','irás','irá','iremos','ireis','irão']],
+  'Futuro do Pretérito':[['aria','arias','aria','aríamos','aríeis','ariam'],['eria','erias','eria','eríamos','eríeis','eriam'],['iria','irias','iria','iríamos','iríeis','iriam']]},
+ sub:{
+  'Presente':[['e','es','e','emos','eis','em'],['a','as','a','amos','ais','am'],['a','as','a','amos','ais','am']],
+  'Pretérito Imperfeito':[['asse','asses','asse','ássemos','ásseis','assem'],['esse','esses','esse','êssemos','êsseis','essem'],['isse','isses','isse','íssemos','ísseis','issem']],
+  'Futuro':[['ar','ares','ar','armos','ardes','arem'],['er','eres','er','ermos','erdes','erem'],['ir','ires','ir','irmos','irdes','irem']]},
+ imp:{
+  'Afirmativo':[[null,'a','e','emos','ai','em'],[null,'e','a','amos','ei','am'],[null,'e','a','amos','i','am']],
+  'Negativo':[[null,'es','e','emos','eis','em'],[null,'as','a','amos','ais','am'],[null,'as','a','amos','ais','am']]},
+ nom:{
+  'Infinitivo':[['ar'],['er'],['ir']],
+  'Gerúndio':[['ando'],['endo'],['indo']],
+  'Particípio':[['ado'],['ido'],['ido']]}
+};
+const MODO_NAME={ind:'Indicativo',sub:'Subjuntivo',imp:'Imperativo',nom:'Forma Nominal'};
+const MODO_COLOR={ind:'var(--ind)',sub:'var(--sub)',imp:'var(--imp)',nom:'var(--nom)'};
+const LEVELS={
+ 1:{name:'Fácil',pool:[['ind','Presente'],['ind','Pretérito Perfeito'],['ind','Futuro do Presente']],options:3,anyRadical:false,showInfo:true},
+ 2:{name:'Médio',pool:Object.keys(E.ind).map(t=>['ind',t]),options:6,anyRadical:false,showInfo:true},
+ 3:{name:'Difícil',pool:[].concat(Object.keys(E.ind).map(t=>['ind',t]),Object.keys(E.sub).map(t=>['sub',t]),Object.keys(E.imp).map(t=>['imp',t]),Object.keys(E.nom).map(t=>['nom',t])),options:8,anyRadical:false,showInfo:true},
+ 4:{name:'Desafio',pool:[].concat(Object.keys(E.ind).map(t=>['ind',t]),Object.keys(E.sub).map(t=>['sub',t]),Object.keys(E.imp).map(t=>['imp',t]),Object.keys(E.nom).map(t=>['nom',t])),options:10,anyRadical:true,showInfo:true}
+};
+const GOAL=10;
+
+/* ================= ESTADO ================= */
+let st={},timerInt=null;
+const $=id=>document.getElementById(id);
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+  if(id!=='game'&&timerInt){clearInterval(timerInt);timerInt=null;}
+}
+function startGame(level){
+  st={level,score:0,hits:0,miss:0,streak:0,progress:0,locked:false};
+  show('game');
+  $('lvlName').textContent='Nível '+level+' · '+LEVELS[level].name;
+  updateStats();newRound();
+}
+function newRound(){
+  const L=LEVELS[st.level];
+  st.locked=false;st.hintLevel=0;st.usedHint=false;st.selectedCard=null;st.roundStart=Date.now();
+  const [modo,tempo]=rnd(L.pool);
+  st.modo=modo;st.tempo=tempo;
+  st.pIdx = modo==='nom'?0 : modo==='imp'?1+Math.floor(Math.random()*5) : Math.floor(Math.random()*6);
+  st.verb=Math.floor(Math.random()*3);
+  buildDeck();renderRound();
+  if(timerInt)clearInterval(timerInt);
+  timerInt=setInterval(()=>{$('sTime').textContent=Math.floor((Date.now()-st.roundStart)/1000)+'s';},500);
+}
+function correctEnding(vIdx){return E[st.modo][st.tempo][VERBS[vIdx].cls][st.pIdx];}
+function buildDeck(){
+  const L=LEVELS[st.level];
+  const need=new Set();
+  if(L.anyRadical){for(let v=0;v<3;v++){const e=correctEnding(v);if(e)need.add(e);}}
+  else need.add(correctEnding(st.verb));
+  const pool=[];
+  for(const m in E)for(const t in E[m])for(const arr of E[m][t])for(const e of arr)if(e&&!need.has(e))pool.push(e);
+  const distr=[...new Set(shuffle(pool))].slice(0,Math.max(0,L.options-need.size));
+  st.deck=shuffle([...need,...distr]);
+}
+function renderRound(){
+  const L=LEVELS[st.level];
+  // chips de informação
+  const c=$('chips');c.innerHTML='';
+  const add=(txt,color)=>{const s=document.createElement('span');s.className='chip';s.style.background=color||'#475569';s.textContent=txt;c.appendChild(s);};
+  add('Modo: '+MODO_NAME[st.modo],MODO_COLOR[st.modo]);
+  add((st.modo==='nom'?'Forma: ':'Tempo: ')+st.tempo);
+  if(st.modo!=='nom')add('Pessoa: '+PESSOAS[st.pIdx]);
+  if(L.anyRadical)add('🎯 Escolha o radical e a terminação!','#7c3aed');
+  else add('Verbo da rodada: '+VERBS[st.verb].inf.toUpperCase(),'#0ea5e9');
+  // radicais
+  const r=$('radicals');r.innerHTML='';
+  VERBS.forEach((v,i)=>{
+    const d=document.createElement('div');
+    d.className='cardv radical-card'+((!L.anyRadical&&i===st.verb)?' target':'');
+    d.dataset.v=i;
+    d.style.borderBottomColor=MODO_COLOR[st.modo];
+    d.innerHTML='<div class="rad">'+v.rad+'-</div><div class="inf">verbo '+v.inf+'</div><div class="tag">RADICAL</div>';
+    d.onclick=()=>{if(st.selectedCard!=null&&!st.locked)attempt(i,st.selectedCard);};
+    r.appendChild(d);
+  });
+  // monte
+  const dk=$('deck');dk.innerHTML='';
+  st.deck.forEach(e=>{
+    const d=document.createElement('div');
+    d.className='cardv ending-card';d.textContent=e.toUpperCase();d.dataset.e=e;
+    dk.appendChild(d);enableDrag(d);
+  });
+  // área de encaixe
+  $('assembly').innerHTML='<div class="slot filled">'+(L.anyRadical?'?':VERBS[st.verb].rad+'-')+'</div><span>+</span><div class="slot" id="dropSlot">?</div><span>=</span><div class="slot" id="resSlot">?</div>';
+  $('feedback').className='';$('feedback').innerHTML='';
+  $('hintBox').style.display='none';
+  $('progText').textContent='Progresso da fase: '+st.progress+' / '+GOAL;
+  $('progFill').style.width=(st.progress/GOAL*100)+'%';
+}
+function shuffleDeck(){if(!st.locked){shuffle(st.deck);renderRound();}}
+
+/* ================= DRAG & DROP + TOQUE ================= */
+function enableDrag(card){
+  card.addEventListener('pointerdown',ev=>{
+    if(st.locked)return;
+    ev.preventDefault();
+    const startX=ev.clientX,startY=ev.clientY;let ghost=null,moved=false;
+    const move=e=>{
+      if(!moved&&Math.hypot(e.clientX-startX,e.clientY-startY)<6)return;
+      moved=true;
+      if(!ghost){ghost=card.cloneNode(true);ghost.classList.add('ghost');document.body.appendChild(ghost);card.style.opacity=.35;}
+      ghost.style.left=(e.clientX-43)+'px';ghost.style.top=(e.clientY-55)+'px';
+      document.querySelectorAll('.radical-card').forEach(rc=>{
+        const b=rc.getBoundingClientRect();
+        rc.classList.toggle('over',e.clientX>b.left&&e.clientX<b.right&&e.clientY>b.top&&e.clientY<b.bottom);
+      });
+    };
+    const up=e=>{
+      document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',up);
+      if(ghost){ghost.remove();card.style.opacity=1;}
+      document.querySelectorAll('.radical-card').forEach(rc=>rc.classList.remove('over'));
+      if(moved){
+        const target=document.elementsFromPoint(e.clientX,e.clientY).find(el=>el.classList&&el.classList.contains('radical-card'));
+        if(target)attempt(+target.dataset.v,card.dataset.e);
+      }else{ // clique = selecionar
+        document.querySelectorAll('.ending-card').forEach(x=>x.classList.remove('selected'));
+        if(st.selectedCard===card.dataset.e){st.selectedCard=null;}
+        else{st.selectedCard=card.dataset.e;card.classList.add('selected');}
+      }
+    };
+    document.addEventListener('pointermove',move);
+    document.addEventListener('pointerup',up);
+  });
+}
+
+/* ================= VERIFICAÇÃO ================= */
+function attempt(vIdx,ending){
+  if(st.locked)return;
+  const L=LEVELS[st.level];
+  if(!L.anyRadical&&vIdx!==st.verb){wrong(ending,'Esse radical pertence ao verbo <b>'+VERBS[vIdx].inf+'</b>. A rodada pede o verbo <b>'+VERBS[st.verb].inf+'</b>!');return;}
+  const ok=correctEnding(vIdx);
+  const neg=st.modo==='imp'&&st.tempo==='Negativo';
+  if(ok&&ending.toLowerCase()===ok.toLowerCase()){
+    st.locked=true;st.hits++;st.streak++;st.progress++;
+    const pts=st.usedHint?5:10;st.score+=pts;
+    let bonus=0;
+    if(st.streak===3)bonus=5;else if(st.streak===5)bonus=10;else if(st.streak===10)bonus=25;
+    if(bonus){st.score+=bonus;toast('🔥 Sequência de '+st.streak+'! Bônus +'+bonus);}
+    const word=(neg?'não ':'')+VERBS[vIdx].rad.toLowerCase()+ok;
+    $('dropSlot').textContent=ok.toUpperCase();$('dropSlot').classList.add('filled');
+    $('resSlot').innerHTML='<span class="result-word">'+word.toUpperCase()+'</span>';$('resSlot').classList.add('filled');
+    let frase = st.modo==='nom'?'“'+word+'”'
+      : st.modo==='imp'?'“'+cap(word)+', '+PESSOAS[st.pIdx].split('/')[0]+'!”'
+      : '“'+cap(PESSOAS[st.pIdx].split('/')[0])+' '+word+'.”';
+    $('feedback').className='ok';
+    $('feedback').innerHTML='<div class="big">✅ Correto! '+frase+' <small>(+'+pts+' pts)</small></div>'+
+      '<div class="detail"><b>'+VERBS[vIdx].rad+' + '+ok.toUpperCase()+' = '+word.toUpperCase()+'</b><br>'+
+      'Verbo: <b>'+VERBS[vIdx].inf+'</b> · Modo: <b>'+MODO_NAME[st.modo]+'</b> · '+(st.modo==='nom'?'Forma':'Tempo')+': <b>'+st.tempo+'</b>'+
+      (st.modo!=='nom'?' · Pessoa: <b>'+P_LABEL[st.pIdx]+'</b>':'')+'</div>';
+    updateStats();
+    if(st.progress>=GOAL)setTimeout(win,1200);else setTimeout(newRound,2200);
+  }else wrong(ending);
+}
+function wrong(ending,extra){
+  st.miss++;st.streak=0;updateStats();
+  const ok=correctEnding(LEVELS[st.level].anyRadical?st.verb:st.verb);
+  const v=VERBS[st.verb];
+  const neg=st.modo==='imp'&&st.tempo==='Negativo';
+  const word=(neg?'não ':'')+v.rad.toLowerCase()+ok;
+  $('dropSlot').textContent=ending.toUpperCase();
+  $('dropSlot').classList.add('shake');setTimeout(()=>$('dropSlot').classList.remove('shake'),400);
+  $('feedback').className='bad';
+  $('feedback').innerHTML='<div class="big">❌ RESPOSTA INCORRETA';
+}
+function giveHint(){
+  if(st.locked)return;
+  const v=VERBS[st.verb];const ok=correctEnding(st.verb);
+  st.usedHint=true;st.hintLevel++;
+  const hb=$('hintBox');hb.style.display='block';
+  if(st.hintLevel===1){
+    hb.innerHTML='💡 Você está conjugando o verbo <b>'+v.inf.toUpperCase()+'</b>'+
+      (st.modo==='nom'?' na forma nominal <b>'+st.tempo.toLowerCase()+'</b>.':
+      ' na <b>'+P_LABEL[st.pIdx]+'</b> do <b>'+st.tempo.toLowerCase()+' do '+MODO_NAME[st.modo].toLowerCase()+'</b>.');
+  }else{
+    hb.innerHTML='💡💡 A terminação começa com a letra <b>'+ok.charAt(0).toUpperCase()+'</b>… (acerto com dica vale +5)';
+  }
+}
+function updateStats(){
+  $('sScore').textContent=st.score;$('sHits').textContent=st.hits;
+  $('sMiss').textContent=st.miss;$('sStreak').textContent=st.streak;
+  $('progText').textContent='Progresso da fase: '+st.progress+' / '+GOAL;
+  $('progFill').style.width=(st.progress/GOAL*100)+'%';
+}
+function toast(msg){
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2200);
+}
+function win(){
+  clearInterval(timerInt);
+  $('winText').textContent='Pontuação: '+st.score+' · Acertos: '+st.hits+' · Erros: '+st.miss;
+  const nb=$('nextLvlBtn');
+  if(st.level<4){nb.style.display='block';nb.onclick=()=>{closeWin();startGame(st.level+1);};}
+  else nb.style.display='none';
+  $('winOverlay').classList.add('active');
+}
+function closeWin(){$('winOverlay').classList.remove('active');}
+</script>
+</body>
+</html>

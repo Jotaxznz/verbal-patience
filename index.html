@@ -96,17 +96,6 @@ html[data-theme="dark"] .blob.b3{opacity:.12; background:var(--royal);}
 .brand{display:flex; align-items:center; gap:9px; font-family:var(--font-display); font-weight:700; font-size:1.05rem; letter-spacing:-.02em;}
 .brand .dot{width:9px; height:9px; border-radius:50%; background:var(--coral); box-shadow:0 0 0 4px var(--coral-100);}
 
-.theme-toggle{
-  position:relative; width:52px; height:30px; border-radius:99px; background:var(--surface-2);
-  border:1px solid var(--line); box-shadow:var(--shadow-sm); transition:background .3s var(--ease);
-}
-.theme-toggle .knob{
-  position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%;
-  background:linear-gradient(135deg, var(--royal), var(--coral)); transition:transform .3s var(--ease);
-  display:flex; align-items:center; justify-content:center; font-size:11px;
-}
-html[data-theme="dark"] .theme-toggle .knob{transform:translateX(22px);}
-
 /* ---------- screens ---------- */
 .screen{display:none; animation:enter .45s var(--ease);}
 .screen.active{display:block;}
@@ -126,19 +115,25 @@ html[data-theme="dark"] .theme-toggle .knob{transform:translateX(22px);}
 .btn.ghost{background:transparent; box-shadow:none; border:1px solid var(--line); color:var(--ink-soft);}
 .btn.small{width:auto; padding:9px 15px; font-size:.85rem; border-radius:12px;}
 .btn[disabled]{opacity:.4; cursor:not-allowed; transform:none; box-shadow:none;}
-.back-fab{
-  position:fixed; top:14px; left:14px; z-index:80;
+.btn.active-theme{background:var(--royal); color:#fff; border-color:var(--royal);}
+
+.back-fab, .gear-btn{
+  position:fixed; top:14px; z-index:80;
   width:44px; height:44px; border-radius:50%;
   display:none; align-items:center; justify-content:center;
   background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow-md);
   font-size:1.2rem; color:var(--ink); transition:transform .18s var(--ease), box-shadow .18s var(--ease);
 }
-.back-fab.show{display:flex;}
+.back-fab{left:14px;}
+.gear-btn{right:14px;}
+.back-fab.show, .gear-btn.show{display:flex;}
 .back-fab:hover{transform:translateY(-2px) scale(1.04); box-shadow:var(--shadow-lg);}
-.back-fab:active{transform:translateY(0) scale(.97);}
+.gear-btn:hover{transform:translateY(-2px) rotate(25deg); box-shadow:var(--shadow-lg);}
+.back-fab:active, .gear-btn:active{transform:translateY(0) scale(.97);}
 body.has-back-fab .brand{opacity:0; pointer-events:none;}
 @media(max-width:520px){
-  .back-fab{width:40px; height:40px; top:10px; left:10px; font-size:1.05rem;}
+  .back-fab, .gear-btn{width:40px; height:40px; top:10px; font-size:1.05rem;}
+  .back-fab{left:10px;} .gear-btn{right:10px;}
 }
 
 /* ---------- hero (início) ---------- */
@@ -249,6 +244,7 @@ body.has-back-fab .brand{opacity:0; pointer-events:none;}
 .stat{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); padding:9px 15px; text-align:center; box-shadow:var(--shadow-sm); min-width:78px;}
 .stat b{display:block; font-size:1.2rem; font-family:var(--font-display);}
 .stat span{font-size:.62rem; color:var(--muted); letter-spacing:.1em; text-transform:uppercase;}
+.stat.lives b{font-size:1rem; letter-spacing:1px;}
 .progressbar{height:9px; background:var(--bg-2); border-radius:99px; overflow:hidden; margin:14px 0 3px;}
 .progressbar div{height:100%; background:linear-gradient(90deg, var(--royal), var(--coral)); width:0%; transition:width .5s var(--ease); position:relative;}
 .progtext{text-align:center; font-size:.76rem; color:var(--muted); margin-bottom:10px;}
@@ -262,11 +258,32 @@ body.has-back-fab .brand{opacity:0; pointer-events:none;}
   box-shadow:var(--shadow-lg); font-size:.9rem;
 }
 
-/* ---------- overlay ---------- */
+/* ---------- overlay (fim de fase / game over) ---------- */
 .overlay{position:fixed; inset:0; background:rgba(14,18,32,.62); backdrop-filter:blur(3px); display:none; align-items:center; justify-content:center; z-index:150; padding:20px;}
 .overlay.active{display:flex;}
 .overlay .box{background:var(--surface); border-radius:var(--radius-lg); padding:30px; text-align:center; max-width:340px; box-shadow:var(--shadow-lg); animation:pop .35s var(--ease);}
 .overlay .box h2{margin-bottom:8px; font-size:1.5rem;}
+
+/* ---------- overlay de configurações (mais leve, não cobre tudo) ---------- */
+.settings-overlay{
+  position:fixed; inset:0; z-index:170; display:none; align-items:center; justify-content:center;
+  background:rgba(27,35,51,.16); backdrop-filter:blur(9px); -webkit-backdrop-filter:blur(9px); padding:20px;
+}
+html[data-theme="dark"] .settings-overlay{background:rgba(0,0,0,.30);}
+.settings-overlay.active{display:flex;}
+.settings-box{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg);
+  padding:26px; max-width:320px; width:100%; box-shadow:var(--shadow-lg); animation:pop .3s var(--ease);
+}
+.settings-box h2{font-size:1.15rem; margin-bottom:18px; text-align:center;}
+.settings-row{margin-bottom:18px;}
+.settings-row:last-of-type{margin-bottom:0;}
+.settings-row .lbl{display:block; font-weight:700; font-size:.78rem; color:var(--muted); margin-bottom:9px; text-transform:uppercase; letter-spacing:.06em;}
+.settings-row .volume-row{display:flex; align-items:center; gap:10px;}
+.settings-row input[type=range]{flex:1; accent-color:var(--royal); height:4px;}
+.settings-row .vol-val{font-family:var(--font-display); font-weight:700; font-size:.85rem; min-width:38px; text-align:right;}
+.theme-switch-row{display:flex; gap:8px;}
+.theme-switch-row .btn{flex:1;}
 
 /* ---------- modo cego ---------- */
 .blind-word{
@@ -276,9 +293,6 @@ body.has-back-fab .brand{opacity:0; pointer-events:none;}
 }
 .line-select{margin-bottom:14px;}
 .line-select > .lbl{font-weight:700; font-size:.78rem; color:var(--muted); margin-bottom:7px; text-transform:uppercase; letter-spacing:.08em;}
-
-/* ---------- rodapé de jogo ---------- */
-.footer-nav{text-align:center; margin-top:20px;}
 
 @media(max-width:520px){
   .radical-card{width:96px; height:126px;}
@@ -293,11 +307,11 @@ body.has-back-fab .brand{opacity:0; pointer-events:none;}
 <div class="bg-deco"><div class="dotgrid"></div><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
 
 <button class="back-fab" id="backFab" onclick="show('start')" aria-label="Voltar ao menu">←</button>
+<button class="gear-btn show" id="gearBtn" onclick="openSettings()" aria-label="Configurações">⚙️</button>
 
 <div class="shell">
   <div class="topbar">
     <div class="brand"><span class="dot"></span>Paciência Verbal</div>
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Alternar modo escuro"><span class="knob">🌙</span></button>
   </div>
 
   <!-- ============ TELA INICIAL ============ -->
@@ -313,11 +327,9 @@ body.has-back-fab .brand{opacity:0; pointer-events:none;}
     </div>
 
     <div class="menu">
-      <button class="btn primary" onclick="startGame(1)"><span class="lead">▶ Jogar agora</span></button>
-      <button class="btn" onclick="show('learn')"><span> Aprender<small>Radical, desinência e modos</small></span></button>
-      <button class="btn" onclick="show('levels')"><span> Níveis<small>Do fácil ao mestre</small></span></button>
-      <button class="btn" onclick="startBlind()"><span> Modo Cego<small>Descubra tempo e pessoa</small></span></button>
-      <button class="btn" onclick="show('howto')"><span> Como jogar<small>Regras em 6 passos</small></span></button>
+      <button class="btn primary" onclick="show('levels')"><span class="lead">▶ Jogar</span></button>
+      <button class="btn" onclick="show('learn')"><span>Aprender<small>Radical, desinência e modos</small></span></button>
+      <button class="btn" onclick="show('howto')"><span>Como jogar<small>Regras em 7 passos</small></span></button>
     </div>
   </div>
 
@@ -344,7 +356,7 @@ body.has-back-fab .brand{opacity:0; pointer-events:none;}
       </div>
       <p style="margin-top:10px">As formas verbais mudam conforme tempo, modo e pessoa. O jogo usa apenas <b>formas reais e gramaticalmente corretas</b> — não é qualquer terminação que serve para qualquer radical!</p>
     </div>
-    <button class="btn coral" style="width:100%" onclick="startGame(1)">Começar a jogar</button>
+    <button class="btn coral" style="width:100%" onclick="show('levels')">Escolher nível e jogar</button>
   </div>
 
   <!-- ============ COMO JOGAR ============ -->
@@ -354,9 +366,9 @@ body.has-back-fab .brand{opacity:0; pointer-events:none;}
       <p>1. Observe a missão da rodada (modo, tempo e pessoa).</p>
       <p>2. <b>Arraste</b> uma carta do monte de desinências até o radical correto — ou toque na carta e depois no radical.</p>
       <p>3. Acertou? A palavra se forma, você ganha pontos e vê a explicação gramatical.</p>
-      <p>4. Errou? O jogo mostra a terminação correta e você tenta de novo na próxima rodada.</p>
+      <p>4. Errou? Você perde uma vida e o jogo mostra a terminação correta.</p>
       <p>5. Use <b>dica</b> se precisar (vale metade dos pontos), <b>embaralhar</b> para reorganizar o monte e <b>nova rodada</b> para pular.</p>
-      <p>6. Acertos seguidos geram <b>bônus</b>: 3 → +5 · 5 → +10 · 10 → +25. Complete 10 acertos para fechar a fase!</p>
+      <p>6. Você começa cada nível com <b>3 vidas</b> — errar demais encerra a fase antes da hora. No <b>Nível Mestre</b> é só <b>1 vida</b>, então capricho é essencial!</p>
       <p>7. No <b>Modo Cego</b> a palavra já vem pronta — sua missão é identificar o modo, o tempo e a pessoa que a formaram.</p>
     </div>
   </div>
@@ -364,10 +376,11 @@ body.has-back-fab .brand{opacity:0; pointer-events:none;}
   <!-- ============ NÍVEIS ============ -->
   <div id="levels" class="screen">
     <div class="menu" style="grid-template-columns:1fr">
-      <button class="btn" onclick="startGame(1)"><span>🟢 Nível 1 — Fácil<small>Presente, perfeito e futuro do indicativo · 3 cartas</small></span></button>
-      <button class="btn" onclick="startGame(2)"><span>🟡 Nível 2 — Médio<small>Todos os tempos do indicativo · 6 cartas</small></span></button>
-      <button class="btn" onclick="startGame(3)"><span>🟠 Nível 3 — Difícil<small>Indicativo, subjuntivo, imperativo e formas nominais · 8 cartas</small></span></button>
-      <button class="btn" onclick="startGame(4)"><span>🔴 Nível 4 — Mestre<small>Descubra sozinho o verbo e a terminação · 10 cartas</small></span></button>
+      <button class="btn" onclick="startGame(1)"><span>🟢 Nível 1 — Fácil<small>Presente, perfeito e futuro do indicativo · 3 cartas · 3 vidas</small></span></button>
+      <button class="btn" onclick="startGame(2)"><span>🟡 Nível 2 — Médio<small>Todos os tempos do indicativo · 6 cartas · 3 vidas</small></span></button>
+      <button class="btn" onclick="startGame(3)"><span>🟠 Nível 3 — Difícil<small>Indicativo, subjuntivo, imperativo e formas nominais · 8 cartas · 3 vidas</small></span></button>
+      <button class="btn" onclick="startGame(4)"><span>🔴 Nível 4 — Mestre<small>Descubra sozinho o verbo e a terminação · 10 cartas · 1 vida</small></span></button>
+      <button class="btn" onclick="openBlindLives()"><span>🕶️ Modo Cego<small>Identifique modo, tempo e pessoa da palavra pronta · escolha as vidas</small></span></button>
     </div>
   </div>
 
@@ -398,6 +411,7 @@ body.has-back-fab .brand{opacity:0; pointer-events:none;}
     <div id="feedback"></div>
 
     <div class="stats">
+      <div class="stat lives"><b id="sLives">❤️❤️❤️</b><span>Vidas</span></div>
       <div class="stat"><b id="sScore">0</b><span>Pontos</span></div>
       <div class="stat"><b id="sHits">0</b><span>Acertos</span></div>
       <div class="stat"><b id="sMiss">0</b><span>Erros</span></div>
@@ -434,6 +448,7 @@ body.has-back-fab .brand{opacity:0; pointer-events:none;}
     <div id="cegoFeedback"></div>
 
     <div class="stats">
+      <div class="stat lives"><b id="cegoLives">❤️❤️❤️</b><span>Vidas</span></div>
       <div class="stat"><b id="cegoScore">0</b><span>Pontos</span></div>
       <div class="stat"><b id="cegoHits">0</b><span>Acertos</span></div>
       <div class="stat"><b id="cegoMiss">0</b><span>Erros</span></div>
@@ -459,15 +474,64 @@ body.has-back-fab .brand{opacity:0; pointer-events:none;}
   </div>
 </div>
 
+<!-- ============ VIDAS ACABARAM (níveis) ============ -->
+<div class="overlay" id="gameOverOverlay">
+  <div class="box">
+    <h2>💔 Fim de jogo</h2>
+    <p id="overText" style="margin-bottom:16px;color:var(--ink-soft)"></p>
+    <div class="menu" style="display:flex; flex-direction:column;">
+      <button class="btn primary" onclick="closeGameOver();startGame(st.level)">Tentar novamente</button>
+      <button class="btn ghost" onclick="closeGameOver();show('start')">Menu</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============ FIM DO MODO CEGO ============ -->
 <div class="overlay" id="blindWinOverlay">
   <div class="box">
-    <h2>🕶️ Rodada concluída!</h2>
+    <h2 id="blindWinTitle">🕶️ Rodada concluída!</h2>
     <p id="blindWinText" style="margin-bottom:16px;color:var(--ink-soft)"></p>
     <div class="menu" style="display:flex; flex-direction:column;">
       <button class="btn primary" onclick="closeBlindWin();startBlind()">Jogar de novo</button>
       <button class="btn ghost" onclick="closeBlindWin();show('start')">Menu</button>
     </div>
+  </div>
+</div>
+
+<!-- ============ ESCOLHA DE VIDAS (Modo Cego) ============ -->
+<div class="overlay" id="blindLivesOverlay">
+  <div class="box">
+    <h2>🕶️ Modo Cego</h2>
+    <p style="margin-bottom:16px;color:var(--ink-soft)">Quantas vidas você quer nessa rodada?</p>
+    <div class="menu" style="display:flex; flex-direction:column;">
+      <button class="btn" onclick="startBlind(1)">❤️🖤🖤 1 vida</button>
+      <button class="btn" onclick="startBlind(2)">❤️❤️🖤 2 vidas</button>
+      <button class="btn" onclick="startBlind(3)">❤️❤️❤️ 3 vidas</button>
+      <button class="btn ghost" onclick="closeBlindLives()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CONFIGURAÇÕES ============ -->
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-box">
+    <h2>⚙️ Configurações</h2>
+    <div class="settings-row">
+      <span class="lbl">Efeitos sonoros</span>
+      <div class="volume-row">
+        <span>🔈</span>
+        <input type="range" id="volumeSlider" min="0" max="100" value="60">
+        <span class="vol-val" id="volumeLabel">60%</span>
+      </div>
+    </div>
+    <div class="settings-row">
+      <span class="lbl">Aparência</span>
+      <div class="theme-switch-row">
+        <button class="btn small" id="lightBtn" onclick="applyTheme('light')">☀️ Claro</button>
+        <button class="btn small" id="darkBtn" onclick="applyTheme('dark')">🌙 Escuro</button>
+      </div>
+    </div>
+    <button class="btn primary" style="width:100%; margin-top:6px" onclick="closeSettings()">Fechar</button>
   </div>
 </div>
 
@@ -477,20 +541,83 @@ body.has-back-fab .brand{opacity:0; pointer-events:none;}
    ========================================================= */
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
-  const knob = document.querySelector('#themeToggle .knob');
-  if(knob) knob.textContent = t === 'dark' ? '☀️' : '🌙';
   try{ localStorage.setItem('pv-theme', t); }catch(e){}
+  updateThemeButtons();
 }
-function toggleTheme(){
-  const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-  applyTheme(cur === 'dark' ? 'light' : 'dark');
+function updateThemeButtons(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  const lb=$('lightBtn'), db=$('darkBtn');
+  if(lb&&db){
+    lb.classList.toggle('active-theme', cur==='light');
+    db.classList.toggle('active-theme', cur==='dark');
+  }
 }
 (function initTheme(){
   let saved=null;
   try{ saved = localStorage.getItem('pv-theme'); }catch(e){}
   if(!saved){ saved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
-  applyTheme(saved);
+  document.documentElement.setAttribute('data-theme', saved);
 })();
+
+/* =========================================================
+   ÁUDIO — efeitos sonoros sintetizados (sem arquivos externos)
+   ========================================================= */
+let audioCtx=null;
+let sfxVolume=0.6;
+(function initVolume(){
+  try{ const v=localStorage.getItem('pv-volume'); if(v!==null) sfxVolume=parseFloat(v); }catch(e){}
+})();
+function getCtx(){
+  if(!audioCtx){ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
+  if(audioCtx.state==='suspended'){ audioCtx.resume(); }
+  return audioCtx;
+}
+function playTone(freq,start,dur,type,vol){
+  if(sfxVolume<=0) return;
+  try{
+    const ctx=getCtx();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.type=type||'sine'; osc.frequency.value=freq;
+    osc.connect(gain); gain.connect(ctx.destination);
+    const t=ctx.currentTime+start;
+    const v=sfxVolume*(vol!==undefined?vol:1);
+    gain.gain.setValueAtTime(0.0001,t);
+    gain.gain.exponentialRampToValueAtTime(Math.max(v,0.0001),t+0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    osc.start(t); osc.stop(t+dur+0.03);
+  }catch(e){}
+}
+function playCorrectSound(){
+  playTone(523.25,0,.12,'sine',.9);
+  playTone(659.25,.09,.14,'sine',.9);
+  playTone(783.99,.18,.22,'sine',.85);
+}
+function playWrongSound(){
+  playTone(220,0,.16,'sawtooth',.45);
+  playTone(174.6,.11,.24,'sawtooth',.45);
+}
+function playClickSound(){ playTone(440,0,.08,'sine',.5); }
+
+/* =========================================================
+   CONFIGURAÇÕES (engrenagem)
+   ========================================================= */
+function openSettings(){
+  $('volumeSlider').value=Math.round(sfxVolume*100);
+  $('volumeLabel').textContent=Math.round(sfxVolume*100)+'%';
+  updateThemeButtons();
+  $('settingsOverlay').classList.add('active');
+}
+function closeSettings(){ $('settingsOverlay').classList.remove('active'); }
+function initSettingsControls(){
+  const slider=$('volumeSlider');
+  slider.addEventListener('input',e=>{
+    sfxVolume=e.target.value/100;
+    $('volumeLabel').textContent=e.target.value+'%';
+    try{ localStorage.setItem('pv-volume', sfxVolume); }catch(err){}
+  });
+  slider.addEventListener('change',()=>{ playClickSound(); });
+}
 
 /* ================= DADOS GRAMATICAIS =================
    Tabela interna de formas reais: [1ª conj (amar), 2ª (vender), 3ª (partir)]
@@ -527,6 +654,7 @@ const LEVELS={
  4:{name:'Desafio',pool:[].concat(Object.keys(E.ind).map(t=>['ind',t]),Object.keys(E.sub).map(t=>['sub',t]),Object.keys(E.imp).map(t=>['imp',t]),Object.keys(E.nom).map(t=>['nom',t])),options:10,anyRadical:true}
 };
 const GOAL=10;
+const START_LIVES=3;
 
 /* ================= ESTADO ================= */
 let st={},timerInt=null;
@@ -539,13 +667,19 @@ function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   $(id).classList.add('active');
   if(id!=='game'&&timerInt){clearInterval(timerInt);timerInt=null;}
-  const fab=$('backFab');
-  if(id==='start'){ fab.classList.remove('show'); document.body.classList.remove('has-back-fab'); }
-  else{ fab.classList.add('show'); document.body.classList.add('has-back-fab'); }
+  const fab=$('backFab'), gear=$('gearBtn');
+  if(id==='start'){
+    fab.classList.remove('show'); gear.classList.add('show');
+    document.body.classList.remove('has-back-fab');
+  }else{
+    fab.classList.add('show'); gear.classList.remove('show');
+    document.body.classList.add('has-back-fab');
+  }
 }
 
 function startGame(level){
-  st={level,score:0,hits:0,miss:0,streak:0,progress:0,locked:false,conquered:{AM:[],VEND:[],PART:[]}};
+  const maxLives=(level===4?1:START_LIVES);
+  st={level,score:0,hits:0,miss:0,streak:0,progress:0,locked:false,lives:maxLives,maxLives:maxLives,conquered:{AM:[],VEND:[],PART:[]}};
   show('game');
   $('lvlName').textContent='Nível '+level+' · '+LEVELS[level].name;
   updateStats();newRound();
@@ -652,6 +786,7 @@ function attempt(vIdx,ending){
   const neg=st.modo==='imp'&&st.tempo==='Negativo';
   if(ok&&ending.toLowerCase()===ok.toLowerCase()){
     st.locked=true;st.hits++;st.streak++;st.progress++;
+    playCorrectSound();
     const pts=st.usedHint?5:10;st.score+=pts;
     let bonus=0;
     if(st.streak===3)bonus=5;else if(st.streak===5)bonus=10;else if(st.streak===10)bonus=25;
@@ -660,9 +795,6 @@ function attempt(vIdx,ending){
     st.conquered[VERBS[vIdx].rad].push(word);
     $('dropSlot').textContent=ok.toUpperCase();$('dropSlot').classList.add('filled');
     $('resSlot').innerHTML='<span class="result-word">'+word.toUpperCase()+'</span>';$('resSlot').classList.add('filled');
-    let frase = st.modo==='nom'?'"'+word+'"'
-      : st.modo==='imp'?'"'+cap(word)+', '+PESSOAS[st.pIdx].split('/')[0]+'!"'
-      : '"'+cap(PESSOAS[st.pIdx].split('/')[0])+' '+word+'."';
     $('feedback').className='ok';
     $('feedback').innerHTML='<div class="big">✅ Resposta correta!';
     updateStats();
@@ -670,7 +802,11 @@ function attempt(vIdx,ending){
   }else wrong(ending);
 }
 function wrong(ending,extra){
-  st.miss++;st.streak=0;updateStats();
+  st.miss++;st.streak=0;
+  playWrongSound();
+  st.lives--;
+  if(st.lives<=0){ st.locked=true; }
+  updateStats();
   const ok=correctEnding(st.verb);
   const v=VERBS[st.verb];
   const neg=st.modo==='imp'&&st.tempo==='Negativo';
@@ -679,6 +815,7 @@ function wrong(ending,extra){
   $('dropSlot').classList.add('shake');setTimeout(()=>$('dropSlot').classList.remove('shake'),400);
   $('feedback').className='bad';
   $('feedback').innerHTML='<div class="big">❌ Resposta incorreta';
+  if(st.lives<=0){ setTimeout(gameOver,900); }
 }
 function giveHint(){
   if(st.locked)return;
@@ -693,9 +830,11 @@ function giveHint(){
     hb.innerHTML='💡💡 A terminação começa com a letra <b>'+ok.charAt(0).toUpperCase()+'</b>… (acerto com dica vale +5)';
   }
 }
+function livesToHearts(n,max){ max=max||START_LIVES; return '❤️'.repeat(Math.max(0,n)) + '🖤'.repeat(Math.max(0,max-n)); }
 function updateStats(){
   $('sScore').textContent=st.score;$('sHits').textContent=st.hits;
   $('sMiss').textContent=st.miss;$('sStreak').textContent=st.streak;
+  $('sLives').textContent=livesToHearts(st.lives,st.maxLives);
   $('progText').textContent='Progresso da fase: '+st.progress+' / '+GOAL;
   $('progFill').style.width=(st.progress/GOAL*100)+'%';
 }
@@ -712,13 +851,23 @@ function win(){
   $('winOverlay').classList.add('active');
 }
 function closeWin(){$('winOverlay').classList.remove('active');}
+function gameOver(){
+  clearInterval(timerInt);
+  $('overText').textContent='Suas vidas acabaram. Pontuação: '+st.score+' · Acertos: '+st.hits+' · Erros: '+st.miss;
+  $('gameOverOverlay').classList.add('active');
+}
+function closeGameOver(){$('gameOverOverlay').classList.remove('active');}
 
 /* =========================================================
    MODO CEGO — identifique modo, tempo e pessoa da palavra pronta
    ========================================================= */
 let cg={};
-function startBlind(){
-  cg={round:0,total:8,score:0,hits:0,miss:0,selModo:null,selTempo:null,selPessoa:null,waiting:false};
+function openBlindLives(){ $('blindLivesOverlay').classList.add('active'); }
+function closeBlindLives(){ $('blindLivesOverlay').classList.remove('active'); }
+function startBlind(livesChosen){
+  closeBlindLives();
+  const maxLives=livesChosen||START_LIVES;
+  cg={round:0,total:8,score:0,hits:0,miss:0,lives:maxLives,maxLives:maxLives,selModo:null,selTempo:null,selPessoa:null,waiting:false};
   show('blind');
   newBlindRound();
 }
@@ -741,6 +890,7 @@ function newBlindRound(){
 function renderBlind(){
   $('cegoWord').textContent=cg.word.toUpperCase();
   $('cegoProgress').textContent='Palavra '+(cg.round+1)+' / '+cg.total;
+  $('cegoLives').textContent=livesToHearts(cg.lives,cg.maxLives);
 
   const modos=['ind','sub','imp','nom'];
   const mc=$('cegoModoChips');mc.innerHTML='';
@@ -798,23 +948,37 @@ function blindConfirm(){
   const respostaTxt=MODO_NAME[a.modo]+' · '+a.tempo+(precisaPessoa?' · '+P_LABEL[a.pIdx]:'');
   if(acertou){
     cg.hits++;cg.score+=10;
+    playCorrectSound();
     fb.className='ok';fb.innerHTML='<div class="big">✅ Isso mesmo!</div><div class="detail">'+respostaTxt+'</div>';
   }else{
-    cg.miss++;
+    cg.miss++;cg.lives--;
+    playWrongSound();
     fb.className='bad';fb.innerHTML='<div class="big">❌ Era diferente</div><div class="detail">Resposta certa: '+respostaTxt+'</div>';
   }
   $('cegoScore').textContent=cg.score;$('cegoHits').textContent=cg.hits;$('cegoMiss').textContent=cg.miss;
+  $('cegoLives').textContent=livesToHearts(cg.lives,cg.maxLives);
   $('cegoConfirmBtn').disabled=true;
   setTimeout(()=>{
     cg.round++;
-    if(cg.round>=cg.total)finishBlind();else newBlindRound();
+    if(cg.lives<=0)finishBlind(true);
+    else if(cg.round>=cg.total)finishBlind(false);
+    else newBlindRound();
   },1400);
 }
-function finishBlind(){
-  $('blindWinText').textContent='Pontuação: '+cg.score+' · Acertos: '+cg.hits+' de '+cg.total;
+function finishBlind(livesOver){
+  $('blindWinTitle').textContent = livesOver ? '💔 Fim de jogo' : '🕶️ Rodada concluída!';
+  $('blindWinText').textContent = livesOver
+    ? ('Suas vidas acabaram. Pontuação: '+cg.score+' · Acertos: '+cg.hits)
+    : ('Pontuação: '+cg.score+' · Acertos: '+cg.hits+' de '+cg.total);
   $('blindWinOverlay').classList.add('active');
 }
 function closeBlindWin(){$('blindWinOverlay').classList.remove('active');}
+
+/* ================= INICIALIZAÇÃO ================= */
+document.addEventListener('DOMContentLoaded', ()=>{
+  updateThemeButtons();
+  initSettingsControls();
+});
 </script>
 </body>
 </html>

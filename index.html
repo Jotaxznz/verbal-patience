@@ -142,9 +142,27 @@ button:focus-visible, .chip:focus-visible, a:focus-visible{outline:none; box-sha
 .brand .dot{width:9px; height:9px; border-radius:50%; background:var(--coral); box-shadow:0 0 0 4px var(--coral-100);}
 
 /* ---------- screens ---------- */
-.screen{display:none; animation:enter .45s var(--ease);}
-.screen.active{display:block;}
-@keyframes enter{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+.screen{
+  position:absolute; top:0; left:0; width:100%; 
+  opacity:0; visibility:hidden; 
+  transform:translateY(18px) scale(.98);
+  transition:opacity .4s var(--ease), transform .4s var(--ease), visibility 0s .4s;
+  pointer-events:none; will-change:opacity,transform;
+}
+.screen.active{
+  position:relative; 
+  opacity:1; visibility:visible; 
+  transform:translateY(0) scale(1);
+  transition:opacity .4s var(--ease), transform .4s var(--ease), visibility 0s 0s;
+  pointer-events:auto;
+}
+.screen.screen-exit{
+  position:absolute; 
+  opacity:0; visibility:visible;
+  transform:translateY(-12px) scale(.98);
+  transition:opacity .35s var(--ease), transform .35s var(--ease), visibility 0s .35s;
+  pointer-events:none;
+}
 
 /* ---------- botões ---------- */
 .btn{
@@ -420,6 +438,11 @@ html[data-style="apple"] .icon-emoji{display:none;}
 html[data-style="apple"] .icon-glyph{display:inline-flex; align-items:center; justify-content:center;}
 .icon-glyph-label{display:none;}
 html[data-style="apple"] .icon-glyph-label{display:inline; margin-left:6px;}
+html[data-style="apple"] .btn.level-btn:not(.primary){border-left-width:4px !important; border-left-style:solid !important; border-radius:var(--radius-md) !important;}
+html[data-style="apple"] .btn.level-btn.lvl-1:not(.primary){border-left-color:#2E9E5B !important;}
+html[data-style="apple"] .btn.level-btn.lvl-2:not(.primary){border-left-color:#C99A1E !important;}
+html[data-style="apple"] .btn.level-btn.lvl-3:not(.primary){border-left-color:var(--coral) !important;}
+html[data-style="apple"] .btn.level-btn.lvl-4:not(.primary){border-left-color:#C0392B !important;}
 
 /* =========================================================
    ESTILO "PAPEL" — caderno escolar (data-style="papel")
@@ -494,7 +517,11 @@ html[data-style="terminal"] .eyebrow{background:var(--surface-2); border:1px sol
 html[data-style="terminal"] .chip.selectable.ativo{background:var(--royal); color:#0B0E0C;}
 html[data-style="terminal"] .progressbar div{background:var(--royal);}
 html[data-style="terminal"] .gear-btn::before{display:none;}
-html[data-style="terminal"] .level-btn{border-left-color:var(--line) !important;}
+html[data-style="terminal"] .btn.level-btn{border-left-width:4px; border-left-style:solid;}
+html[data-style="terminal"] .btn.level-btn.lvl-1{border-left-color:#2E9E5B;}
+html[data-style="terminal"] .btn.level-btn.lvl-2{border-left-color:#C99A1E;}
+html[data-style="terminal"] .btn.level-btn.lvl-3{border-left-color:var(--coral);}
+html[data-style="terminal"] .btn.level-btn.lvl-4{border-left-color:#C0392B;}
 
 /* ---------- modo cego ---------- */
 .blind-word{
@@ -535,9 +562,9 @@ html[data-style="terminal"] .level-btn{border-left-color:var(--line) !important;
 
   <!-- ============ TELA INICIAL ============ -->
   <div id="start" class="screen active">
-    <span class="eyebrow">Jogo de gramática</span>
-    <h1 class="hero-title">Monte verbos.<br>Aprenda <em>conjugação</em>.</h1>
-    <p class="hero-tag">Combine o radical certo com a desinência certa e veja a palavra se formar. Um jeito visual de treinar modos e tempos verbais.</p>
+    <span class="eyebrow">Língua portuguesa</span>
+    <h1 class="hero-title">Monte verbos<br>Aprenda <em>conjugação</em></h1>
+    <p class="hero-tag">Combine o radical certo com a desinência certa e veja a palavra se formar.</p>
 
     <div class="equation">
       <span class="piece">AM</span><span class="op">+</span>
@@ -599,7 +626,7 @@ html[data-style="terminal"] .level-btn{border-left-color:var(--line) !important;
       <button class="btn level-btn lvl-2" onclick="startGame(2)"><span>Nível 2: Médio<small>Todos os tempos do indicativo · 6 cartas · 3 vidas</small></span></button>
       <button class="btn level-btn lvl-3" onclick="startGame(3)"><span>Nível 3: Difícil<small>Indicativo, subjuntivo, imperativo e formas nominais · 8 cartas · 3 vidas</small></span></button>
       <button class="btn level-btn lvl-4" onclick="startGame(4)"><span>Nível 4: Mestre<small>Descubra sozinho o verbo e a terminação · 10 cartas · 1 vida</small></span></button>
-      <button class="btn" onclick="openBlindLives()"><span>🕶️ Modo Cego<small>Identifique modo, tempo e pessoa da palavra pronta · escolha as vidas</small></span></button>
+      <button class="btn" onclick="openBlindLives()"><span> Modo Cego<small>Identifique modo, tempo e pessoa da palavra pronta · escolha as vidas</small></span></button>
     </div>
   </div>
 
@@ -732,7 +759,7 @@ html[data-style="terminal"] .level-btn{border-left-color:var(--line) !important;
 <!-- ============ ESCOLHA DE VIDAS (Modo Cego) ============ -->
 <div class="overlay" id="blindLivesOverlay">
   <div class="box">
-    <h2>🕶️ Modo Cego</h2>
+    <h2> Modo Cego</h2>
     <p style="margin-bottom:16px;color:var(--ink-soft)">Quantas vidas você quer nessa rodada?</p>
     <div class="menu" style="display:flex; flex-direction:column;">
       <button class="btn" onclick="startBlind(1)">❤️🖤🖤 1 vida</button>
@@ -940,7 +967,7 @@ function initSettingsControls(){
 /* ================= DADOS GRAMATICAIS =================
    Tabela interna de formas reais: [1ª conj (amar), 2ª (vender), 3ª (partir)]
    Cada linha: eu, tu, ele/ela, nós, vós, eles/elas          */
-const VERBS=[{inf:'amar',rad:'AM',cls:0},{inf:'vender',rad:'VEND',cls:1},{inf:'partir',rad:'PART',cls:2}];
+const VERBS=[{inf:'amar',rad:'AM',cls:0,irregular:false},{inf:'vender',rad:'VEND',cls:1,irregular:false},{inf:'partir',rad:'PART',cls:2,irregular:false},{inf:'fazer',rad:'FAZ',cls:1,irregular:true},{inf:'ir',rad:'IR',cls:2,irregular:true}];
 const PESSOAS=['eu','tu','ele/ela','nós','vós','eles/elas'];
 const P_LABEL=['1ª pessoa do singular','2ª pessoa do singular','3ª pessoa do singular','1ª pessoa do plural','2ª pessoa do plural','3ª pessoa do plural'];
 const E={
@@ -963,13 +990,203 @@ const E={
   'Gerúndio':[['ando'],['endo'],['indo']],
   'Particípio':[['ado'],['ido'],['ido']]}
 };
+/* ================= VERBOS IRREGULARES =================
+   Conjugações completas e splits radical/desinência para 'fazer' e 'ir'.
+   forms: formas conjugadas completas (usadas no Modo Cego e resultado).
+   splits: [radical, desinência] por pessoa (null = forma indisponível no modo cartas). */
+const IRREG = {
+  fazer: {
+    forms: {
+      ind: {
+        'Presente':['faço','fazes','faz','fazemos','fazeis','fazem'],
+        'Pretérito Perfeito':['fiz','fizeste','fez','fizemos','fizestes','fizeram'],
+        'Pretérito Imperfeito':['fazia','fazias','fazia','fazíamos','fazíeis','faziam'],
+        'Pretérito Mais-que-perfeito':['fizera','fizeras','fizera','fizéramos','fizéreis','fizeram'],
+        'Futuro do Presente':['farei','farás','fará','faremos','fareis','farão'],
+        'Futuro do Pretérito':['faria','farias','faria','faríamos','faríeis','fariam']
+      },
+      sub: {
+        'Presente':['faça','faças','faça','façamos','façais','façam'],
+        'Pretérito Imperfeito':['fizesse','fizesses','fizesse','fizéssemos','fizésseis','fizessem'],
+        'Futuro':['fizer','fizeres','fizer','fizermos','fizerdes','fizerem']
+      },
+      imp: {
+        'Afirmativo':[null,'faze','faça','façamos','fazei','façam'],
+        'Negativo':[null,'faças','faça','façamos','façais','façam']
+      },
+      nom: {
+        'Infinitivo':['fazer'],
+        'Gerúndio':['fazendo'],
+        'Particípio':['feito']
+      }
+    },
+    splits: {
+      ind: {
+        'Presente':[['FAÇ','o'],['FAZ','es'],null,['FAZ','emos'],['FAZ','eis'],['FAZ','em']],
+        'Pretérito Perfeito':[null,['FIZ','este'],null,['FIZ','emos'],['FIZ','estes'],['FIZ','eram']],
+        'Pretérito Imperfeito':[['FAZ','ia'],['FAZ','ias'],['FAZ','ia'],['FAZ','íamos'],['FAZ','íeis'],['FAZ','iam']],
+        'Pretérito Mais-que-perfeito':[['FIZ','era'],['FIZ','eras'],['FIZ','era'],['FIZ','éramos'],['FIZ','éreis'],['FIZ','eram']],
+        'Futuro do Presente':[['FAR','ei'],['FAR','ás'],['FAR','á'],['FAR','emos'],['FAR','eis'],['FAR','ão']],
+        'Futuro do Pretérito':[['FAR','ia'],['FAR','ias'],['FAR','ia'],['FAR','íamos'],['FAR','íeis'],['FAR','iam']]
+      },
+      sub: {
+        'Presente':[['FAÇ','a'],['FAÇ','as'],['FAÇ','a'],['FAÇ','amos'],['FAÇ','ais'],['FAÇ','am']],
+        'Pretérito Imperfeito':[['FIZ','esse'],['FIZ','esses'],['FIZ','esse'],['FIZ','éssemos'],['FIZ','ésseis'],['FIZ','essem']],
+        'Futuro':[['FIZ','er'],['FIZ','eres'],['FIZ','er'],['FIZ','ermos'],['FIZ','erdes'],['FIZ','erem']]
+      },
+      imp: {
+        'Afirmativo':[null,['FAZ','e'],['FAÇ','a'],['FAÇ','amos'],['FAZ','ei'],['FAÇ','am']],
+        'Negativo':[null,['FAÇ','as'],['FAÇ','a'],['FAÇ','amos'],['FAÇ','ais'],['FAÇ','am']]
+      },
+      nom: {
+        'Infinitivo':[['FAZ','er']],
+        'Gerúndio':[['FAZ','endo']],
+        'Particípio':[['FEIT','o']]
+      }
+    }
+  },
+  ir: {
+    forms: {
+      ind: {
+        'Presente':['vou','vais','vai','vamos','ides','vão'],
+        'Pretérito Perfeito':['fui','foste','foi','fomos','fostes','foram'],
+        'Pretérito Imperfeito':['ia','ias','ia','íamos','íeis','iam'],
+        'Pretérito Mais-que-perfeito':['fora','foras','fora','fôramos','fôreis','foram'],
+        'Futuro do Presente':['irei','irás','irá','iremos','ireis','irão'],
+        'Futuro do Pretérito':['iria','irias','iria','iríamos','iríeis','iriam']
+      },
+      sub: {
+        'Presente':['vá','vás','vá','vamos','vades','vão'],
+        'Pretérito Imperfeito':['fosse','fosses','fosse','fôssemos','fôsseis','fossem'],
+        'Futuro':['for','fores','for','formos','fordes','forem']
+      },
+      imp: {
+        'Afirmativo':[null,'vai','vá','vamos','ide','vão'],
+        'Negativo':[null,'vás','vá','vamos','vades','vão']
+      },
+      nom: {
+        'Infinitivo':['ir'],
+        'Gerúndio':['indo'],
+        'Particípio':['ido']
+      }
+    },
+    splits: {
+      ind: {
+        'Presente':[['V','ou'],['V','ais'],['V','ai'],['V','amos'],null,['V','ão']],
+        'Pretérito Perfeito':[['FU','i'],['FO','ste'],['FO','i'],['FO','mos'],['FO','stes'],['FO','ram']],
+        'Pretérito Imperfeito':null,
+        'Pretérito Mais-que-perfeito':[['FO','ra'],['FO','ras'],['FO','ra'],['FÔ','ramos'],['FÔ','reis'],['FO','ram']],
+        'Futuro do Presente':[['IR','ei'],['IR','ás'],['IR','á'],['IR','emos'],['IR','eis'],['IR','ão']],
+        'Futuro do Pretérito':[['IR','ia'],['IR','ias'],['IR','ia'],['IR','íamos'],['IR','íeis'],['IR','iam']]
+      },
+      sub: {
+        'Presente':[['V','á'],['V','ás'],['V','á'],['V','amos'],['V','ades'],['V','ão']],
+        'Pretérito Imperfeito':[['FO','sse'],['FO','sses'],['FO','sse'],['FÔ','ssemos'],['FÔ','sseis'],['FO','ssem']],
+        'Futuro':[['FO','r'],['FO','res'],['FO','r'],['FO','rmos'],['FO','rdes'],['FO','rem']]
+      },
+      imp: {
+        'Afirmativo':[null,['V','ai'],['V','á'],['V','amos'],null,['V','ão']],
+        'Negativo':[null,['V','ás'],['V','á'],['V','amos'],['V','ades'],['V','ão']]
+      },
+      nom: {
+        'Infinitivo':null,
+        'Gerúndio':null,
+        'Particípio':null
+      }
+    }
+  }
+};
+
+/* ================= FUNÇÕES AUXILIARES (irregulares + homonímias) ================= */
+
+/** Retorna a forma conjugada completa para o verbo/modo/tempo/pessoa */
+function getFullForm(vIdx, modo, tempo, pIdx) {
+  const v = VERBS[vIdx];
+  if (v.irregular) {
+    return IRREG[v.inf]?.forms[modo]?.[tempo]?.[pIdx] || null;
+  }
+  const ending = E[modo]?.[tempo]?.[v.cls]?.[pIdx];
+  if (!ending) return null;
+  return v.rad.toLowerCase() + ending;
+}
+
+/** Retorna [radical, desinência] para verbo irregular, ou null se indisponível no modo cartas */
+function getIrregSplit(vIdx, modo, tempo, pIdx) {
+  const v = VERBS[vIdx];
+  if (!v.irregular) return null;
+  const splits = IRREG[v.inf]?.splits[modo]?.[tempo];
+  if (!splits) return null;
+  return splits[pIdx] || null;
+}
+
+/** Retorna o radical de exibição correto para o contexto dado */
+function getDisplayRadical(vIdx, modo, tempo, pIdx) {
+  const v = VERBS[vIdx];
+  if (!v.irregular) return v.rad;
+  const split = getIrregSplit(vIdx, modo, tempo, pIdx);
+  return split ? split[0] : v.rad;
+}
+
+/** Retorna a desinência correta para o verbo/modo/tempo/pessoa */
+function getCorrectEnding(vIdx, modo, tempo, pIdx) {
+  const v = VERBS[vIdx];
+  if (v.irregular) {
+    const split = getIrregSplit(vIdx, modo, tempo, pIdx);
+    return split ? split[1] : null;
+  }
+  return E[modo]?.[tempo]?.[v.cls]?.[pIdx] || null;
+}
+
+/** Verifica se uma combinação é jogável no modo cartas (tem split válido) */
+function isPlayableSplit(vIdx, modo, tempo, pIdx) {
+  const v = VERBS[vIdx];
+  if (!v.irregular) {
+    const e = E[modo]?.[tempo]?.[v.cls]?.[pIdx];
+    return e != null;
+  }
+  return getIrregSplit(vIdx, modo, tempo, pIdx) != null;
+}
+
+/** Retorna todas as classificações gramaticais válidas para uma palavra exibida (resolve homonímias) */
+function getAllValidClassifications(displayWord) {
+  const results = [];
+  const lower = displayWord.toLowerCase();
+  const isNeg = lower.startsWith('não ');
+  const baseWord = isNeg ? lower.slice(4) : lower;
+  for (let vIdx = 0; vIdx < VERBS.length; vIdx++) {
+    const v = VERBS[vIdx];
+    for (const modo in E) {
+      for (const tempo in E[modo]) {
+        const thisIsNeg = modo === 'imp' && tempo === 'Negativo';
+        if (isNeg !== thisIsNeg) continue;
+        const maxP = modo === 'nom' ? 1 : 6;
+        for (let pIdx = 0; pIdx < maxP; pIdx++) {
+          let form;
+          if (v.irregular) {
+            form = IRREG[v.inf]?.forms[modo]?.[tempo]?.[pIdx];
+          } else {
+            const ending = E[modo]?.[tempo]?.[v.cls]?.[pIdx];
+            if (!ending) continue;
+            form = v.rad.toLowerCase() + ending;
+          }
+          if (!form) continue;
+          if (form.toLowerCase() === baseWord) {
+            results.push({ vIdx, modo, tempo, pIdx });
+          }
+        }
+      }
+    }
+  }
+  return results;
+}
+
 const MODO_NAME={ind:'Indicativo',sub:'Subjuntivo',imp:'Imperativo',nom:'Forma Nominal'};
 const MODO_COLOR={ind:'var(--ind)',sub:'var(--sub)',imp:'var(--imp)',nom:'var(--nom)'};
 const LEVELS={
- 1:{name:'Fácil',pool:[['ind','Presente'],['ind','Pretérito Perfeito'],['ind','Futuro do Presente']],options:3,anyRadical:false},
- 2:{name:'Médio',pool:Object.keys(E.ind).map(t=>['ind',t]),options:6,anyRadical:false},
- 3:{name:'Difícil',pool:[].concat(Object.keys(E.ind).map(t=>['ind',t]),Object.keys(E.sub).map(t=>['sub',t]),Object.keys(E.imp).map(t=>['imp',t]),Object.keys(E.nom).map(t=>['nom',t])),options:8,anyRadical:false},
- 4:{name:'Desafio',pool:[].concat(Object.keys(E.ind).map(t=>['ind',t]),Object.keys(E.sub).map(t=>['sub',t]),Object.keys(E.imp).map(t=>['imp',t]),Object.keys(E.nom).map(t=>['nom',t])),options:10,anyRadical:true}
+ 1:{name:'Fácil',pool:[['ind','Presente'],['ind','Pretérito Perfeito'],['ind','Futuro do Presente']],options:3,anyRadical:false,verbs:[0,1,2]},
+ 2:{name:'Médio',pool:Object.keys(E.ind).map(t=>['ind',t]),options:6,anyRadical:false,verbs:[0,1,2]},
+ 3:{name:'Difícil',pool:[].concat(Object.keys(E.ind).map(t=>['ind',t]),Object.keys(E.sub).map(t=>['sub',t]),Object.keys(E.imp).map(t=>['imp',t]),Object.keys(E.nom).map(t=>['nom',t])),options:8,anyRadical:false,verbs:[0,1,2,3,4]},
+ 4:{name:'Desafio',pool:[].concat(Object.keys(E.ind).map(t=>['ind',t]),Object.keys(E.sub).map(t=>['sub',t]),Object.keys(E.imp).map(t=>['imp',t]),Object.keys(E.nom).map(t=>['nom',t])),options:10,anyRadical:true,verbs:[0,1,2,3,4]}
 };
 const GOAL=10;
 const START_LIVES=3;
@@ -982,8 +1199,18 @@ const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
 
 function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  $(id).classList.add('active');
+  const incoming = $(id);
+  const current = document.querySelector('.screen.active');
+  /* — anima saída da tela atual — */
+  if(current && current !== incoming){
+    current.classList.remove('active');
+    current.classList.add('screen-exit');
+    setTimeout(()=> current.classList.remove('screen-exit'), 400);
+  } else {
+    document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.classList.remove('screen-exit');});
+  }
+  /* — anima entrada da nova tela — */
+  incoming.classList.add('active');
   if(id!=='game'&&timerInt){clearInterval(timerInt);timerInt=null;}
   const fab=$('backFab'), gear=$('gearBtn');
   if(id==='start'){
@@ -997,7 +1224,8 @@ function show(id){
 
 function startGame(level){
   const maxLives=(level===4?1:START_LIVES);
-  st={level,score:0,hits:0,miss:0,streak:0,progress:0,locked:false,lives:maxLives,maxLives:maxLives,conquered:{AM:[],VEND:[],PART:[]}};
+  const conquered={};VERBS.forEach(v=>conquered[v.rad]=[]);
+  st={level,score:0,hits:0,miss:0,streak:0,progress:0,locked:false,lives:maxLives,maxLives:maxLives,conquered};
   show('game');
   $('lvlName').textContent=': Nível '+level+' · '+LEVELS[level].name;
   updateStats();newRound();
@@ -1005,22 +1233,41 @@ function startGame(level){
 function newRound(){
   const L=LEVELS[st.level];
   st.locked=false;st.hintLevel=0;st.usedHint=false;st.selectedCard=null;st.roundStart=Date.now();
-  const [modo,tempo]=rnd(L.pool);
-  st.modo=modo;st.tempo=tempo;
-  st.pIdx = modo==='nom'?0 : modo==='imp'?1+Math.floor(Math.random()*5) : Math.floor(Math.random()*6);
-  st.verb=Math.floor(Math.random()*3);
+  /* Sorteia combinação garantindo split válido para o modo cartas */
+  let tries=0;
+  do {
+    const [modo,tempo]=rnd(L.pool);
+    st.modo=modo;st.tempo=tempo;
+    st.pIdx = modo==='nom'?0 : modo==='imp'?1+Math.floor(Math.random()*5) : Math.floor(Math.random()*6);
+    st.verb = rnd(L.verbs);
+    tries++;
+  } while (!isPlayableSplit(st.verb, st.modo, st.tempo, st.pIdx) && tries<200);
   buildDeck();renderRound();
   if(timerInt)clearInterval(timerInt);
   timerInt=setInterval(()=>{$('sTime').textContent=Math.floor((Date.now()-st.roundStart)/1000)+'s';},500);
 }
-function correctEnding(vIdx){return E[st.modo][st.tempo][VERBS[vIdx].cls][st.pIdx];}
+function correctEnding(vIdx){return getCorrectEnding(vIdx, st.modo, st.tempo, st.pIdx);}
 function buildDeck(){
   const L=LEVELS[st.level];
   const need=new Set();
-  if(L.anyRadical){for(let v=0;v<3;v++){const e=correctEnding(v);if(e)need.add(e);}}
-  else need.add(correctEnding(st.verb));
+  if(L.anyRadical){
+    for(const vIdx of L.verbs){
+      const e=getCorrectEnding(vIdx, st.modo, st.tempo, st.pIdx);
+      if(e)need.add(e);
+    }
+  } else {
+    need.add(correctEnding(st.verb));
+  }
+  /* Pool de distratores: desinências regulares + irregulares */
   const pool=[];
   for(const m in E)for(const t in E[m])for(const arr of E[m][t])for(const e of arr)if(e&&!need.has(e))pool.push(e);
+  for(const key in IRREG){
+    const spl=IRREG[key].splits;
+    for(const m in spl)for(const t in spl[m]){
+      const arr=spl[m][t];if(!arr)continue;
+      for(const pair of arr)if(pair&&pair[1]&&!need.has(pair[1]))pool.push(pair[1]);
+    }
+  }
   const distr=[...new Set(shuffle(pool))].slice(0,Math.max(0,L.options-need.size));
   st.deck=shuffle([...need,...distr]);
 }
@@ -1034,13 +1281,18 @@ function renderRound(){
   if(L.anyRadical)add('Escolha o radical e a terminação','var(--coral)');
   else add('Verbo da rodada: '+VERBS[st.verb].inf.toUpperCase(),'var(--royal)');
 
+  /* Radical de exibição correto para o contexto (ex: FAÇ- no subjuntivo presente de fazer) */
+  const displayRad=getDisplayRadical(st.verb, st.modo, st.tempo, st.pIdx);
+
   const r=$('radicals');r.innerHTML='';
-  VERBS.forEach((v,i)=>{
+  const showVerbs=L.anyRadical?L.verbs:[st.verb];
+  showVerbs.forEach(i=>{
+    const v=VERBS[i];
     const d=document.createElement('div');
     d.className='cardv radical-card'+((!L.anyRadical&&i===st.verb)?' target':'');
     d.dataset.v=i;
     d.style.borderBottomColor=MODO_COLOR[st.modo];
-    const badgesHtml = st.conquered[v.rad].slice(-4).map(w=>'<span class="badge">'+w+'</span>').join('');
+    const badgesHtml = (st.conquered[v.rad]||[]).slice(-4).map(w=>'<span class="badge">'+w+'</span>').join('');
     d.innerHTML='<div class="rad">'+v.rad+'-</div><div class="inf">verbo '+v.inf+'</div><div class="tag">Radical</div><div class="badges">'+badgesHtml+'</div>';
     d.onclick=()=>{if(st.selectedCard!=null&&!st.locked)attempt(i,st.selectedCard);};
     r.appendChild(d);
@@ -1053,7 +1305,7 @@ function renderRound(){
     dk.appendChild(d);enableDrag(d);
   });
 
-  $('assembly').innerHTML='<div class="slot filled">'+(L.anyRadical?'?':VERBS[st.verb].rad+'-')+'</div><span>+</span><div class="slot" id="dropSlot">?</div><span>=</span><div class="slot" id="resSlot">?</div>';
+  $('assembly').innerHTML='<div class="slot filled">'+(L.anyRadical?'?':displayRad+'-')+'</div><span>+</span><div class="slot" id="dropSlot">?</div><span>=</span><div class="slot" id="resSlot">?</div>';
   $('feedback').className='';$('feedback').innerHTML='';
   $('hintBox').style.display='none';
   $('progText').textContent='Progresso da fase: '+st.progress+' / '+GOAL;
@@ -1100,21 +1352,34 @@ function attempt(vIdx,ending){
   if(st.locked)return;
   const L=LEVELS[st.level];
   if(!L.anyRadical&&vIdx!==st.verb){wrong(ending,'Esse radical pertence ao verbo <b>'+VERBS[vIdx].inf+'</b>. A rodada pede o verbo <b>'+VERBS[st.verb].inf+'</b>!');return;}
-  const ok=correctEnding(vIdx);
+  /* Resolução de homonímias: aceita a desinência se gera forma válida para o contexto */
+  const e=getCorrectEnding(vIdx, st.modo, st.tempo, st.pIdx);
+  const acertou=e!=null&&ending.toLowerCase()===e.toLowerCase();
   const neg=st.modo==='imp'&&st.tempo==='Negativo';
-  if(ok&&ending.toLowerCase()===ok.toLowerCase()){
+  if(acertou){
     st.locked=true;st.hits++;st.streak++;st.progress++;
     playCorrectSound();
     const pts=st.usedHint?5:10;st.score+=pts;
     let bonus=0;
     if(st.streak===3)bonus=5;else if(st.streak===5)bonus=10;else if(st.streak===10)bonus=25;
     if(bonus){st.score+=bonus;toast('Sequência de '+st.streak+'! Bônus +'+bonus);}
-    const word=(neg?'não ':'')+VERBS[vIdx].rad.toLowerCase()+ok;
+    /* Usa getFullForm para exibir a forma correta (inclusive acentos de irregulares) */
+    const fullForm=getFullForm(vIdx, st.modo, st.tempo, st.pIdx);
+    const word=(neg?'não ':'')+fullForm;
     st.conquered[VERBS[vIdx].rad].push(word);
-    $('dropSlot').textContent=ok.toUpperCase();$('dropSlot').classList.add('filled');
+    $('dropSlot').textContent=ending.toUpperCase();$('dropSlot').classList.add('filled');
     $('resSlot').innerHTML='<span class="result-word">'+word.toUpperCase()+'</span>';$('resSlot').classList.add('filled');
     $('feedback').className='ok';
-    $('feedback').innerHTML='<div class="big">Resposta correta</div>';
+    /* Lista todas as classificações válidas para a forma (homonímias) */
+    const allValid=getAllValidClassifications(word);
+    let homoHtml='';
+    if(allValid.length>1){
+      const outras=allValid.filter(c=>!(c.modo===st.modo&&c.tempo===st.tempo&&c.pIdx===st.pIdx));
+      if(outras.length>0){
+        homoHtml='<div class="detail" style="margin-top:4px;font-size:.85em;opacity:.8">Também válido: '+outras.map(c=>MODO_NAME[c.modo]+'/'+c.tempo+(c.modo!=='nom'?'/'+PESSOAS[c.pIdx]:'')).join('; ')+'</div>';
+      }
+    }
+    $('feedback').innerHTML='<div class="big">Resposta correta</div>'+homoHtml;
     updateStats();
     if(st.progress>=GOAL)setTimeout(win,1200);else setTimeout(newRound,2200);
   }else wrong(ending);
@@ -1125,10 +1390,6 @@ function wrong(ending,extra){
   st.lives--;
   if(st.lives<=0){ st.locked=true; }
   updateStats();
-  const ok=correctEnding(st.verb);
-  const v=VERBS[st.verb];
-  const neg=st.modo==='imp'&&st.tempo==='Negativo';
-  const word=(neg?'não ':'')+v.rad.toLowerCase()+ok;
   $('dropSlot').textContent=ending.toUpperCase();
   $('dropSlot').classList.add('shake');setTimeout(()=>$('dropSlot').classList.remove('shake'),400);
   $('feedback').className='bad';
@@ -1141,11 +1402,20 @@ function giveHint(){
   st.usedHint=true;st.hintLevel++;
   const hb=$('hintBox');hb.style.display='block';
   if(st.hintLevel===1){
-    hb.innerHTML='💡 Você está conjugando o verbo <b>'+v.inf.toUpperCase()+'</b>'+
-      (st.modo==='nom'?' na forma nominal <b>'+st.tempo.toLowerCase()+'</b>.':
+    let msg='💡 Você está conjugando o verbo <b>'+v.inf.toUpperCase()+'</b>';
+    if(v.irregular){
+      const rad=getDisplayRadical(st.verb, st.modo, st.tempo, st.pIdx);
+      msg+=' (radical: <b>'+rad+'-</b>)';
+    }
+    msg+=(st.modo==='nom'?' na forma nominal <b>'+st.tempo.toLowerCase()+'</b>.':
       ' na <b>'+P_LABEL[st.pIdx]+'</b> do <b>'+st.tempo.toLowerCase()+' do '+MODO_NAME[st.modo].toLowerCase()+'</b>.');
+    hb.innerHTML=msg;
   }else{
-    hb.innerHTML='💡💡 A terminação começa com a letra <b>'+ok.charAt(0).toUpperCase()+'</b>… (acerto com dica vale +5)';
+    if(ok){
+      hb.innerHTML='💡💡 A terminação começa com a letra <b>'+ok.charAt(0).toUpperCase()+'</b>… (acerto com dica vale +5)';
+    }else{
+      hb.innerHTML='💡💡 Dica indisponível para esta forma.';
+    }
   }
 }
 function livesToHearts(n,max){ max=max||START_LIVES; return '❤️'.repeat(Math.max(0,n)) + '🖤'.repeat(Math.max(0,max-n)); }
@@ -1191,17 +1461,22 @@ function startBlind(livesChosen){
 }
 function newBlindRound(){
   const modos=['ind','sub','imp','nom'];
-  const modo=rnd(modos);
-  const tempo=rnd(Object.keys(E[modo]));
-  const verb=Math.floor(Math.random()*3);
-  let pIdx;
-  if(modo==='nom')pIdx=0;
-  else if(modo==='imp')pIdx=rnd([1,2,3,4,5]);
-  else pIdx=Math.floor(Math.random()*6);
-  const ending=E[modo][tempo][VERBS[verb].cls][pIdx];
+  let modo,tempo,verb,pIdx,fullForm;
+  /* Sorteia combinação válida (forma não nula) incluindo verbos irregulares */
+  let tries=0;
+  do {
+    modo=rnd(modos);
+    tempo=rnd(Object.keys(E[modo]));
+    verb=Math.floor(Math.random()*VERBS.length);
+    if(modo==='nom')pIdx=0;
+    else if(modo==='imp')pIdx=rnd([1,2,3,4,5]);
+    else pIdx=Math.floor(Math.random()*6);
+    fullForm=getFullForm(verb, modo, tempo, pIdx);
+    tries++;
+  } while(!fullForm && tries<200);
   const neg=modo==='imp'&&tempo==='Negativo';
   cg.answer={modo,tempo,pIdx};
-  cg.word=(neg?'não ':'')+VERBS[verb].rad.toLowerCase()+ending;
+  cg.word=(neg?'não ':'')+fullForm;
   cg.selModo=null;cg.selTempo=null;cg.selPessoa=null;cg.waiting=false;
   renderBlind();
 }
@@ -1255,23 +1530,36 @@ function renderBlind(){
 }
 function blindConfirm(){
   if(cg.waiting)return;
-  const a=cg.answer;
-  const certoModo=cg.selModo===a.modo;
-  const certoTempo=cg.selTempo===a.tempo;
-  const precisaPessoa=a.modo!=='nom';
-  const certoPessoa=!precisaPessoa||cg.selPessoa===a.pIdx;
-  const acertou=certoModo&&certoTempo&&certoPessoa;
+  /* Resolução de homonímias: aceita qualquer classificação válida para a palavra exibida */
+  const allValid=getAllValidClassifications(cg.word);
+  const acertou=allValid.some(c=>{
+    const needP=c.modo!=='nom';
+    return c.modo===cg.selModo&&c.tempo===cg.selTempo&&(!needP||c.pIdx===cg.selPessoa);
+  });
   cg.waiting=true;
   const fb=$('cegoFeedback');
-  const respostaTxt=MODO_NAME[a.modo]+' · '+a.tempo+(precisaPessoa?' · '+P_LABEL[a.pIdx]:'');
+  /* Monta texto com todas as classificações válidas (homonímias) */
+  const buildHomoHtml=(exclude)=>{
+    if(allValid.length<=1)return '';
+    const outras=allValid.filter(c=>!exclude(c));
+    if(!outras.length)return '';
+    return '<div class="detail" style="margin-top:4px;font-size:.85em;opacity:.8">Também válido: '+outras.map(c=>MODO_NAME[c.modo]+'/'+c.tempo+(c.modo!=='nom'?'/'+PESSOAS[c.pIdx]:'')).join('; ')+'</div>';
+  };
   if(acertou){
     cg.hits++;cg.score+=10;
     playCorrectSound();
-    fb.className='ok';fb.innerHTML='<div class="big">Isso mesmo</div><div class="detail">'+respostaTxt+'</div>';
+    const precisaP=cg.selModo!=='nom';
+    const resTxt=MODO_NAME[cg.selModo]+' · '+cg.selTempo+(precisaP?' · '+P_LABEL[cg.selPessoa]:'');
+    const homoHtml=buildHomoHtml(c=>c.modo===cg.selModo&&c.tempo===cg.selTempo&&(c.modo==='nom'||c.pIdx===cg.selPessoa));
+    fb.className='ok';fb.innerHTML='<div class="big">Isso mesmo</div><div class="detail">'+resTxt+'</div>'+homoHtml;
   }else{
     cg.miss++;cg.lives--;
     playWrongSound();
-    fb.className='bad';fb.innerHTML='<div class="big">Era diferente</div><div class="detail">Resposta certa: '+respostaTxt+'</div>';
+    const first=allValid[0]||cg.answer;
+    const precisaP=first.modo!=='nom';
+    const resTxt=MODO_NAME[first.modo]+' · '+first.tempo+(precisaP?' · '+P_LABEL[first.pIdx]:'');
+    const homoHtml=buildHomoHtml(c=>c===first);
+    fb.className='bad';fb.innerHTML='<div class="big">Era diferente</div><div class="detail">Resposta certa: '+resTxt+'</div>'+homoHtml;
   }
   $('cegoScore').textContent=cg.score;$('cegoHits').textContent=cg.hits;$('cegoMiss').textContent=cg.miss;
   $('cegoLives').textContent=livesToHearts(cg.lives,cg.maxLives);
